@@ -1,0 +1,169 @@
+package app.shbd.services
+
+import android.content.Context
+import app.shbd.AppContainer
+import app.shbd.R
+import app.shbd.models.ActiveCalorieSource
+import app.shbd.models.DietMode
+import app.shbd.models.EnergyFormat
+import app.shbd.models.EnergyUnit
+import app.shbd.models.MacroPlanResolver
+import app.shbd.models.UserProfile
+import app.shbd.models.WidgetSnapshot
+import app.shbd.models.nutritionTotals
+import kotlinx.coroutines.flow.first
+import java.text.NumberFormat
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import kotlin.math.abs
+import kotlin.math.roundToInt
+
+internal data class DailySummaryNotification(
+    val title: String,
+    val text: String,
+    val bigText: String,
+)
+
+/**
+ * Loads today's diary + burn and formats the Daily summary notification.
+ * Returns null when the policy says SKIP (no food logged).
+ */
+internal suspend fun buildDailySummaryNotification(
+    context: Context,
+    container: AppContainer,
+    fallbackTitle: String,
+    fallbackText: String,
+    now: ZonedDateTime = ZonedDateTime.now(),
+    zone: ZoneId = now.zone,
+): DailySummaryNotification? {
+    val day = DailySummaryPolicy.summaryDate(now)
+    val entries = runCatching { container.foodRepository.entriesForDate(day).first() }
+        .getOrDefault(emptyList())
+    val profile = runCatching { container.profileRepository.current() }.getOrNull()
+    val activity = runCatching { container.homeActivityReader.readForDate(day) }.getOrNull()
+    val widget = runCatching { container.prefs.widgetSnapshot.first() }.getOrNull()
+    val widgetForDay = widget?.takeIf {
+        it.dayStart.atZone(zone).toLocalDate() == day
+    }
+
+    val energyLive = activity?.energyLive == true ||
+        (activity == null && widgetForDay?.activeCalorieSource == ActiveCalorieSource.MEASURED.storageKey)
+    val active = when {
+        activity?.energyLive == true -> activity.activeCalories
+        widgetForDay != null -> widgetForDay.activeCaloriesToday ?: 0
+        else -> activity?.activeCalories ?: 0
+    }
+    val total = activity?.totalCalories
+    val keto = profile?.dietMode == DietMode.KETO
+    val carbsTotal = entries.sumOf { it.carbs }
+    val fiberTotal = entries.sumOf { it.fiber ?: 0.0 }
+    val carbsG = if (keto) {
+        DailySummaryPolicy.netCarbsG(carbsTotal, fiberTotal)
+    } else {
+        carbsTotal.roundToInt()
+    }
+    val goalKcal = summaryGoalKcal(widgetForDay, profile, day)
+    val energyUnit = container.prefs.energyUnit.first()
+
+    val totals = entries.nutritionTotals()
+    val input = DailySummaryInput(
+        eatenKcal = totals.calories,
+        proteinG = totals.protein.roundToInt(),
+        carbsG = carbsG,
+        fatG = totals.fat.roundToInt(),
+        bmrKcal = profile?.bmr?.roundToInt() ?: 0,
+        activeKcal = active,
+        energyLive = energyLive,
+        totalKcal = total,
+        estimatedActiveKcal = profile?.estimatedDailyActiveCalories ?: 0,
+        hasFoodLogged = entries.isNotEmpty(),
+    )
+    val result = DailySummaryPolicy.evaluate(input)
+    return formatDailySummary(
+        context,
+        result,
+        fallbackTitle,
+        fallbackText,
+        goalKcal = goalKcal,
+        carbsAreNet = keto,
+        energyUnit = energyUnit,
+    )
+}
+
+/**
+ * The goal kcal for the summary's "of X" line: today's widget snapshot when it
+ * is fresh, else the live resolution for the summarized day — the day-type
+ * plan's target when enabled (#60), else the base effective target.
+ */
+internal fun summaryGoalKcal(
+    widgetForDay: WidgetSnapshot?,
+    profile: UserProfile?,
+    day: LocalDate,
+): Int = widgetForDay?.resolvedDisplayGoalTarget
+    ?: profile?.let { MacroPlanResolver.targetsFor(it, day).targets.calories }
+    ?: 0
+
+internal fun formatDailySummary(
+    context: Context,
+    result: DailySummaryResult,
+    fallbackTitle: String,
+    fallbackText: String,
+    goalKcal: Int = 0,
+    carbsAreNet: Boolean = false,
+    energyUnit: String = "kcal",
+): DailySummaryNotification? {
+    when (result.verdict) {
+        DailySummaryVerdict.SKIP -> return null
+        DailySummaryVerdict.STATIC -> return DailySummaryNotification(
+            title = fallbackTitle,
+            text = fallbackText,
+            bigText = fallbackText,
+        )
+        else -> Unit
+    }
+    val nf = NumberFormat.getIntegerInstance()
+    val unit = EnergyUnit.fromStorage(energyUnit)
+    val unitLabel = context.getString(if (unit == EnergyUnit.KJ) R.string.unit_kj else R.string.unit_kcal)
+    fun q(v: Int): Int = EnergyFormat.quantity(v, unit)
+    val title = when (result.verdict) {
+        DailySummaryVerdict.DEFICIT ->
+            context.getString(R.string.notif_summary_deficit, nf.format(q(result.delta)), unitLabel)
+        DailySummaryVerdict.SURPLUS ->
+            context.getString(R.string.notif_summary_surplus, nf.format(q(abs(result.delta))), unitLabel)
+        DailySummaryVerdict.ON_TARGET ->
+            context.getString(R.string.notif_summary_on_target)
+        else -> fallbackTitle
+    }
+    val text = context.getString(
+        R.string.notif_summary_eaten_burned,
+        nf.format(q(result.eaten)),
+        nf.format(q(result.burned)),
+    )
+    val macros = context.getString(
+        if (carbsAreNet) R.string.notif_summary_macros_net else R.string.notif_summary_macros,
+        result.proteinG,
+        result.carbsG,
+        result.fatG,
+    )
+    val bigText = buildString {
+        append(text)
+        if (goalKcal > 0) {
+            append('\n')
+            append(
+                context.getString(
+                    R.string.notif_summary_of_goal,
+                    nf.format(q(result.eaten)),
+                    nf.format(q(goalKcal)),
+                ),
+            )
+        }
+        append('\n')
+        append(macros)
+    }
+    return DailySummaryNotification(
+        title = title,
+        text = text,
+        bigText = bigText,
+    )
+}

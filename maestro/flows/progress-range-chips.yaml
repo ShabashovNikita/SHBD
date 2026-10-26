@@ -1,0 +1,29 @@
+# Device-pass pilot flow 1: Diary dashboard -> Weight block -> body chart + range chips.
+# Maps to the P2-1 known-destination surface and the perf-capture range chips.
+# Selectors use the German strings (device locale de-DE, values-de/strings.xml).
+appId: app.shbd.debug
+name: Diary dashboard to progress and range chips
+---
+- launchApp
+# First launch after install seeds a year of fixture data; wait it out.
+# SHBD dashboard strings have no German translation yet, so the English
+# defaults are shown ("Diary", "Weight").
+- extendedWaitUntil:
+    visible: "Diary"
+    timeout: 90000
+# SHBD: the old Progress screen is split into Diary blocks; body charts live on Weight.
+- scrollUntilVisible:
+    element: "Weight"
+- tapOn: "Weight"
+- assertVisible: "Body"                     # SHBD Weight block subtitle (no German string yet)
+- extendedWaitUntil:                        # seeded chart titles
+    visible: "Gewicht"
+    timeout: 10000
+- tapOn:                                  # range chip (if the device renders
+    text: "1 Monat"                       # "1M" instead, adjust both labels)
+    optional: true
+- assertVisible: "Gewicht"
+- tapOn:
+    text: "1 Woche"                       # range chip back
+    optional: true
+- assertVisible: "Body"

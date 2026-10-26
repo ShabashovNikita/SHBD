@@ -1,0 +1,11 @@
+package app.shbd.debug
+
+import app.shbd.AppContainer
+import app.shbd.services.OnDeviceLlmSmokeTest
+
+/** Debug implementation — runs the LiteRT-LM smoke test harness. */
+internal object OnDeviceLlmDebugRunner {
+    suspend fun run(container: AppContainer, config: OnDeviceLlmDebugConfig) {
+        OnDeviceLlmSmokeTest(container, config).run()
+    }
+}

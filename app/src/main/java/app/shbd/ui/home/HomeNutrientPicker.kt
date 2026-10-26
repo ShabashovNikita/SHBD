@@ -1,0 +1,252 @@
+package app.shbd.ui.home
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import app.shbd.R
+import app.shbd.models.FoodLogMacroChip
+import app.shbd.models.HomeDisplayPreferences
+import app.shbd.models.HomeTopNutrient
+import app.shbd.ui.components.ShbdDialog
+import app.shbd.ui.components.ShbdDialogActions
+import app.shbd.ui.theme.AppColors
+import app.shbd.ui.theme.AppTextOpacity
+import app.shbd.ui.theme.nutrientAccentColor
+import androidx.compose.foundation.shape.CircleShape
+import app.shbd.ui.components.MacroChip
+import app.shbd.ui.components.isDarkTheme
+import app.shbd.ui.components.macroGramsText
+import app.shbd.ui.theme.AppRadii
+
+@Composable
+fun HomeTopNutrientPickerDialog(
+    selected: List<HomeTopNutrient>,
+    onSave: (List<HomeTopNutrient>) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var draft by remember(selected) {
+        mutableStateOf(HomeTopNutrient.normalized(selected))
+    }
+    val maxCards = HomeDisplayPreferences.MAX_NUTRIENT_CARD_COUNT
+    var flashMax by remember { mutableStateOf(false) }
+    LaunchedEffect(flashMax) {
+        if (flashMax) {
+            kotlinx.coroutines.delay(600)
+            flashMax = false
+        }
+    }
+
+    fun toggle(nutrient: HomeTopNutrient) {
+        draft = when {
+            nutrient in draft -> if (draft.size <= 1) draft else draft - nutrient
+            draft.size >= maxCards -> {
+                // 5th pick is refused: flash the cap line so the limit reads
+                // as intentional instead of a dead tap.
+                flashMax = true
+                draft
+            }
+            else -> draft + nutrient
+        }
+    }
+
+    ShbdDialog(onDismissRequest = onDismiss) {
+        Text(
+            if (flashMax) stringResource(R.string.home_nutrients_pick_max, maxCards)
+            else stringResource(R.string.home_nutrients_pick_count, maxCards),
+            fontSize = 14.sp,
+            color = if (flashMax) AppColors.Calorie
+            else MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Subtle)
+        )
+        LazyColumn(
+            Modifier
+                .fillMaxWidth()
+                .heightIn(max = 430.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(HomeTopNutrient.values().toList()) { nutrient ->
+                NutrientPickerRow(
+                    label = stringResource(nutrient.displayNameRes),
+                    unit = stringResource(nutrient.unitRes),
+                    checked = nutrient in draft,
+                    accentColor = nutrientAccentColor(nutrient),
+                    onClick = { toggle(nutrient) }
+                )
+            }
+        }
+        ShbdDialogActions(
+            primaryText = stringResource(R.string.action_done),
+            onPrimary = {
+                onSave(HomeTopNutrient.normalized(draft))
+                onDismiss()
+            },
+            dismissText = stringResource(R.string.action_cancel),
+            onDismiss = onDismiss
+        )
+    }
+}
+
+@Composable
+fun FoodLogMacroChipPickerDialog(
+    selected: List<FoodLogMacroChip>,
+    onSave: (List<FoodLogMacroChip>) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var draft by remember(selected) { mutableStateOf(FoodLogMacroChip.normalized(selected)) }
+
+    fun toggle(chip: FoodLogMacroChip) {
+        draft = if (chip in draft) {
+            if (draft.size <= 1) draft else draft - chip
+        } else {
+            draft + chip
+        }
+    }
+
+    ShbdDialog(onDismissRequest = onDismiss) {
+        Text(stringResource(R.string.home_display_food_log_chips), fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        LazyColumn(
+            Modifier
+                .fillMaxWidth()
+                .heightIn(max = 320.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(FoodLogMacroChip.entries) { chip ->
+                val kind = chip.macroKind()
+                val accent = kind?.color() ?: AppColors.Calorie
+                NutrientPickerRow(
+                    label = stringResource(chip.kindLabelRes()),
+                    unit = stringResource(chip.glyphRes()),
+                    checked = chip in draft,
+                    accentColor = accent,
+                    onClick = { toggle(chip) }
+                )
+            }
+        }
+        ShbdDialogActions(
+            primaryText = stringResource(R.string.action_done),
+            onPrimary = {
+                onSave(FoodLogMacroChip.normalized(draft))
+                onDismiss()
+            },
+            dismissText = stringResource(R.string.action_cancel),
+            onDismiss = onDismiss
+        )
+    }
+}
+
+@Composable
+private fun NutrientPickerRow(
+    label: String,
+    unit: String,
+    checked: Boolean,
+    accentColor: Color,
+    onClick: () -> Unit,
+) {
+    val shape = RoundedCornerShape(AppRadii.Card)
+    val isDark = isDarkTheme()
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(
+                if (checked) accentColor.copy(alpha = 0.14f)
+                else if (isDark) AppColors.TranslucentSurfaceDark
+                else AppColors.TranslucentSurfaceLight
+            )
+            .border(
+                0.5.dp,
+                if (checked) accentColor.copy(alpha = 0.28f)
+                else if (isDark) AppColors.HairlineBorderDark else AppColors.HairlineBorderLight,
+                shape
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            Modifier
+                .size(28.dp)
+                .clip(RoundedCornerShape(AppRadii.Chip))
+                .background(if (checked) accentColor else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f))
+                .border(
+                    1.dp,
+                    if (checked) accentColor.copy(alpha = 0.55f)
+                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
+                    RoundedCornerShape(AppRadii.Chip)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            if (checked) {
+                Icon(
+                    Icons.Filled.Check,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+        Spacer(Modifier.width(14.dp))
+        Column(Modifier.weight(1f)) {
+            Text(label, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+            Text(
+                unit,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted)
+            )
+        }
+    }
+}
+
+@Composable
+fun FoodLogMacroChipView(chip: FoodLogMacroChip, value: Double) {
+    val kind = chip.macroKind()
+    if (kind != null) {
+        MacroChip(kind, value)
+    } else {
+        val color = AppColors.Calorie
+        Box(
+            Modifier
+                .clip(androidx.compose.foundation.shape.CircleShape)
+                .background(color.copy(alpha = 0.12f))
+                .padding(horizontal = 8.dp, vertical = 3.dp)
+        ) {
+            Text(
+                "${stringResource(chip.glyphRes())} ${macroGramsText(value)}",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = color,
+            )
+        }
+    }
+}

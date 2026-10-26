@@ -1,0 +1,57 @@
+# ===== Секреты — НИКОГДА не коммитить =====
+# Ключи API для debug-сборки (GEMINI_API_KEY=... и т.п.)
+secrets.properties
+secrets.properties.*
+# Пароли и путь к ключу подписи релиза
+keystore.properties
+# Файлы ключей подписи
+*.jks
+*.keystore
+# Локальный путь к Android SDK и прочие личные настройки Gradle
+local.properties
+# Переменные окружения
+.env
+.env.*
+# Будущий бэкенд / сервисы: учётные данные
+*.pem
+*.p12
+google-services.json
+service-account*.json
+
+# ===== Сборка Android / Gradle =====
+.gradle/
+.kotlin/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+gradle/gradle-daemon-jvm.properties
+
+# ===== IDE и инструменты разработчика =====
+.idea/
+*.iml
+.claude/
+.qwen/
+.cursor/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Логи и экспорт данных здоровья (личные данные) =====
+*.log
+Fud-Food-Diary-*.json
+FudAI-Weight-Import.*
+SHBD-Food-Diary-*
+SHBD-Body-Metrics.*
+SHBD-sync.json
+/screenshots/
+
+# ===== Локальные файлы ИИ-ассистента и IDE (не для репозитория) =====
+CLAUDE.md
+AGENTS.md
+.run/

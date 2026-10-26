@@ -1,0 +1,29 @@
+# Device-pass pilot flow 3: mark today not tracked, rough calories persist
+# (DEVICE_PASS manual item 8).
+# Selectors use the German strings (device locale de-DE, values-de/strings.xml).
+appId: app.shbd.debug
+name: Untracked day mark round trip
+---
+- launchApp
+# First launch after install seeds a year of fixture data; wait it out.
+- extendedWaitUntil:
+    visible: "Meals"
+    timeout: 90000
+- tapOn: "Meals"                             # SHBD: dashboard -> Meals block (HomeScreen in block mode)
+- extendedWaitUntil:
+    visible: "Nutrition"                # SHBD Meals block subtitle (no German string yet)
+    timeout: 10000
+- assertVisible: "Nutrition"
+- tapOn: "Tag markieren"                    # SHBD block mode: day chip under the summary
+- assertVisible: ".*bleibt außen vor.*"    # unique body fragment
+- tapOn:                                    # toggle row: the Role.Switch row
+    text: "Nicht erfasst"                   # below the body text (the toolbar
+    below: ".*bleibt außen vor.*"           # title shares the label, but sits above)
+- assertVisible: "Grobe Kalorien (optional)"
+- tapOn: "Grobe Kalorien (optional)"        # focus the kcal field
+- inputText: "350"
+- tapOn: "Speichern"                        # action_save
+- assertVisible: "Nicht erfasst"            # chip flipped to marked
+- tapOn: "Nicht erfasst"                    # reopen the sheet
+- assertVisible: "Grobe Kalorien (optional)"
+- assertVisible: "350"                      # persisted value

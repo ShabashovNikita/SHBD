@@ -1,0 +1,47 @@
+schema: spec-driven
+
+context: |
+  Write all artifacts and all project documentation in Russian (README, docs, comments in
+  docs, progress log). Code identifiers stay in English.
+  Mobile calorie-tracker app (Android, Kotlin + Jetpack Compose) built on top of an existing
+  open-source MIT calorie-tracker codebase. Android-only: the Gradle project lives in the
+  repository root (module :app), no android/ subfolder.
+  Do not name the source project (or other reference projects) in artifacts: describe what was
+  done and how (technologies, files, behaviour), never "as in <other app>".
+  Unlike the base codebase, this app needs a backend: user accounts, weekly menus, past
+  recommendations, delivery/payment data. Never store raw card data — payment provider tokens only.
+  The developer is new to mobile development: tasks must say how to verify in Android Studio.
+  After each change, update C:\Users\Пользователь\Music\ПРОГРЕСС проекта SHBD.txt (done / todo).
+  For every change, also keep a block in that file's section «ЧТО ПРОВЕРЯТЬ ПО КАЖДОЙ СПЕКЕ»:
+  «Проверить» (concrete manual steps) and «Обратить внимание» (limits, known quirks, risks).
+
+# Project context (optional)
+# Add only constraints that should guide OpenSpec artifacts and workflows.
+# Include constraints an agent cannot infer by reading the code.
+# Keep general project documentation and discoverable codebase facts out.
+# Example:
+#   context: |
+#     Designs and tasks must cover Windows, macOS, and Linux
+#     Write all artifacts in Spanish
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always state what is out of scope
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing

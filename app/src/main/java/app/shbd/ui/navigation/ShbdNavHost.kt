@@ -48,7 +48,7 @@ import app.shbd.ui.diary.blocks.DiaryBlockScreen
 import app.shbd.ui.home.PlanWeekScreen
 import app.shbd.ui.onboarding.OnboardingScreen
 import app.shbd.ui.progress.BodyMeasurementsScreen
-import app.shbd.ui.ration.RationPlaceholderScreen
+import app.shbd.ui.ration.RationScreen
 import app.shbd.ui.settings.AiSettingsScreen
 import app.shbd.ui.settings.AppSettingsScreen
 import app.shbd.ui.settings.CalculationMethodsScreen
@@ -345,7 +345,7 @@ fun ShbdNavHost(
                         }
                     }
                 }
-                composable(ShbdRoutes.RATION) { RationPlaceholderScreen() }
+                composable(ShbdRoutes.RATION) { RationScreen(container = container) }
                 composable(ShbdRoutes.SETTINGS) { SettingsScreen(container = container, nav = nav) }
                 composable(ShbdRoutes.SETTINGS_PERSONAL) {
                     PersonalSettingsScreen(

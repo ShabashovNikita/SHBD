@@ -23,6 +23,8 @@ internal object Keys {
         val LAST_RECALC_SIGNATURE_VERSION = intPreferencesKey("lastRecalcSignatureVersion")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("hasCompletedOnboarding")
         val ONBOARDING_DRAFT = stringPreferencesKey("onboardingDraft")
+        /** Weekly meal-plan survey (Ration tab): answers + open step, JSON RationSurveyState. */
+        val RATION_SURVEY = stringPreferencesKey("rationSurvey")
         /** Release cleartext opt-in for user-entered AI endpoints (issue #8 follow-up, design doc D2 Option B). */
         val ALLOW_INSECURE_HTTP = booleanPreferencesKey("allowInsecureHttp")
         val HAS_SEEN_CAMERA_SCALE_TIP = booleanPreferencesKey("hasSeenCameraScaleTip")

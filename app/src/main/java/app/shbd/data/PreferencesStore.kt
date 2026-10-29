@@ -169,6 +169,8 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     suspend fun setOnboardingCompleted(value: Boolean) = setOnboardingCompletedImpl(value)
     val onboardingDraft: Flow<app.shbd.ui.onboarding.OnboardingDraft?> get() = onboardingDraftImpl
     suspend fun setOnboardingDraft(draft: app.shbd.ui.onboarding.OnboardingDraft?) = setOnboardingDraftImpl(draft)
+    val rationSurveyState: Flow<app.shbd.models.RationSurveyState> get() = rationSurveyStateImpl
+    suspend fun setRationSurveyState(state: app.shbd.models.RationSurveyState) = setRationSurveyStateImpl(state)
     val hasSeenCameraScaleTip: Flow<Boolean> get() = hasSeenCameraScaleTipImpl
     suspend fun setHasSeenCameraScaleTip(value: Boolean) = setHasSeenCameraScaleTipImpl(value)
     val restoredBackupNoticeShown: Flow<Boolean> get() = restoredBackupNoticeShownImpl

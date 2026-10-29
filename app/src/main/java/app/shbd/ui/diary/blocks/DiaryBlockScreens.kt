@@ -57,6 +57,7 @@ import app.shbd.ui.components.ShbdDialog
 import app.shbd.ui.components.ShbdDialogActions
 import app.shbd.ui.components.energyUnitLabel
 import app.shbd.ui.diary.ActivityValues
+import app.shbd.ui.diary.CalorieGoalMenu
 import app.shbd.ui.diary.ManualMetricEditors
 import app.shbd.ui.diary.SleepValues
 import app.shbd.ui.diary.StepsValues
@@ -115,6 +116,7 @@ class DiaryBlockActions(
     val onOpenDayTypes: () -> Unit,
     val onOpenFoodSettings: () -> Unit,
     val onPlanWeek: () -> Unit,
+    val onOpenCaloriePlan: () -> Unit,
 )
 
 /**
@@ -169,14 +171,17 @@ private fun NutritionBlockScreen(
             item { Box16 { SelectedDayWeekCard(container, vm) } }
             item {
                 Box16(top = 12.dp) {
-                    SummaryCard {
+                    // Tap or ⋮ → "Your plan", as from the dashboard Nutrition card.
+                    SummaryCard(onClick = actions.onOpenCaloriePlan) {
                         NutritionSummaryContent(
                             caloriesKcal = ui.loggedCaloriesToday,
                             goalKcal = ui.baseCalorieGoal,
                             protein = protein,
                             fat = fat,
                             carbs = carbs,
-                        )
+                        ) {
+                            CalorieGoalMenu(actions.onOpenCaloriePlan)
+                        }
                     }
                 }
             }

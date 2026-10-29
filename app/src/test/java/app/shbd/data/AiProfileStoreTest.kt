@@ -169,14 +169,14 @@ class AiProfileStoreTest {
     }
 
     @Test
-    fun migration_freshInstall_createsSingleDefaultGeminiProfile() = runBlocking {
+    fun migration_freshInstall_createsSingleEmbeddedModelProfile() = runBlocking {
         val prefs = prefs()
         prefs.ensureAiProfilesMigrated(keyStore(), context)
         val profiles = prefs.aiProfiles.first()
         assertEquals(1, profiles.size)
         val def = profiles.single()
-        assertEquals(AIProvider.GEMINI, def.provider)
-        assertEquals(context.getString(R.string.ai_provider_gemini), def.name)
+        assertEquals(AIProvider.ON_DEVICE, def.provider)
+        assertEquals(app.shbd.services.ondevice.ModelCatalog.default.displayName, def.name)
         assertEquals(def, prefs.activeAiProfile.first())
         assertNull(prefs.fallbackAiProfileId.first())
     }

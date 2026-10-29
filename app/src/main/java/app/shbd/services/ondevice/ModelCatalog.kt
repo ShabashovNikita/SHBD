@@ -39,8 +39,9 @@ object ModelCatalog {
     )
 
     /**
-     * Gemma 4 E4B-it (~4B params) — higher quality, ~3.4 GB download, slower
-     * inference. Same native/mobile `.litertlm` requirement as [E2B].
+     * Gemma 4 E4B-it (~4B params). No longer offered: the app ships a single
+     * embedded model ([E2B]). Kept so the startup migration can delete a
+     * leftover E4B file and the capability floors stay testable.
      */
     val E4B = OnDeviceModelEntry(
         version = "gemma-4-e4b-it-1",
@@ -53,7 +54,11 @@ object ModelCatalog {
         modelCardUrl = "https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm",
     )
 
-    val entries: List<OnDeviceModelEntry> = listOf(E2B, E4B)
+    /** Models the app can download and run: only the embedded [E2B]. */
+    val entries: List<OnDeviceModelEntry> = listOf(E2B)
+
+    /** Every model file the app ever shipped; used to clean up retired ones. */
+    val allKnown: List<OnDeviceModelEntry> = listOf(E2B, E4B)
 
     val default: OnDeviceModelEntry = E2B
 

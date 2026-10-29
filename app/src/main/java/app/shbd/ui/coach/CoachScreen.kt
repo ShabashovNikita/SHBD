@@ -3,6 +3,7 @@ package app.shbd.ui.coach
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.text.format.Formatter
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -63,6 +64,7 @@ import app.shbd.R
 import app.shbd.models.SpeechLanguage
 import app.shbd.models.SpeechProvider
 import app.shbd.services.decodeSampledBitmap
+import app.shbd.services.ondevice.ModelCatalog
 import app.shbd.ui.components.ShbdDialog
 import app.shbd.ui.components.ShbdDialogActions
 import app.shbd.ui.components.InAppCameraCaptureDialog
@@ -168,8 +170,17 @@ fun CoachScreen(container: AppContainer) {
         voice.nativeLocale = voiceLanguage.nativeLocaleTag()
     }
 
-    LaunchedEffect(ui.messages.size, ui.sending) {
-        if (ui.messages.isNotEmpty()) listState.animateScrollToItem(ui.messages.size - 1)
+    LaunchedEffect(ui.messages.size, ui.sending, ui.showModelCard) {
+        if (ui.messages.isNotEmpty()) {
+            listState.animateScrollToItem(ui.messages.size - 1 + if (ui.showModelCard) 1 else 0)
+        }
+    }
+    val modelSizeText = remember { Formatter.formatShortFileSize(ctx, ModelCatalog.default.sizeBytes) }
+    if (ui.showRemoteHelp) {
+        CoachRemoteSetupDialog(
+            onOpenAiProvider = vm::openAiProvider,
+            onDismiss = { vm.showRemoteHelp(false) },
+        )
     }
 
     Scaffold(
@@ -235,7 +246,8 @@ fun CoachScreen(container: AppContainer) {
                         detectTapGestures(onTap = { hideKeyboard() })
                     }
             ) {
-                if (ui.messages.isEmpty()) {
+                // First visit without a model: the "pick a model" card stands in for the empty state.
+                if (ui.messages.isEmpty() && !ui.showModelCard) {
                     EmptyState(modifier = Modifier.fillMaxSize())
                 } else {
                     val resolvedError = ui.error ?: ui.errorRes?.let { stringResource(it) }
@@ -244,7 +256,21 @@ fun CoachScreen(container: AppContainer) {
                         sending = ui.sending,
                         error = resolvedError,
                         listState = listState,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        footer = if (ui.showModelCard) {
+                            {
+                                CoachModelDownloadCard(
+                                    state = ui.downloadState,
+                                    sizeText = modelSizeText,
+                                    localSupported = ui.localSupported,
+                                    onSetupRemote = { vm.showRemoteHelp(true) },
+                                    onInstallLocal = vm::installLocalModel,
+                                    onCancel = vm::cancelModelDownload,
+                                )
+                            }
+                        } else {
+                            null
+                        },
                     )
                 }
             }
@@ -373,3 +399,4 @@ private fun resizedJpeg(bytes: ByteArray, maxDimension: Int, quality: Int): Byte
         out.toByteArray()
     }
 }
+

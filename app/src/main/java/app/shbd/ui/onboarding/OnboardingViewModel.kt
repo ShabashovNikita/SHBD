@@ -4,8 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import app.shbd.AppContainer
-import app.shbd.BuildConfig
-import app.shbd.services.ondevice.OnDeviceCapability
+import app.shbd.data.EmbeddedAi
 import app.shbd.models.ActivityLevel
 import app.shbd.models.AIProvider
 import app.shbd.models.AiProfile
@@ -29,6 +28,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.UUID
+import kotlin.math.roundToInt
 
 /** No diet-mode, notifications, Home-look or AI-provider steps: diet mode and notifications
  *  keep their defaults, Home look lives in Profile → Customize Home, and the AI model is
@@ -129,8 +129,8 @@ data class OnboardingState(
     val notificationsEnabled: Boolean = false,
     val healthConnectEnabled: Boolean = false,
     /** Default AI model picked by [OnboardingViewModel.applyDefaultAi]; not user-editable here. */
-    val aiProvider: AIProvider = AIProvider.GEMINI,
-    val aiModel: String = AIProvider.GEMINI.defaultModel,
+    val aiProvider: AIProvider = AIProvider.ON_DEVICE,
+    val aiModel: String = AIProvider.ON_DEVICE.defaultModel,
     val submitting: Boolean = false,
     /** Manual overrides applied on the Plan Ready step. Null = use formula default. */
     val customCalories: Int? = null,
@@ -164,6 +164,20 @@ data class OnboardingState(
         customCarbs = customCarbs,
         customFat = customFat
     )
+
+    /**
+     * Plan Ready calories: the slider pick, else the maintenance norm minus the
+     * deficit (plus the surplus) of the pace picked on Goal Speed — not raised to
+     * the BMR floor, so the plan and its ETA match the pace step.
+     */
+    val planKcal: Int get() {
+        val profile = buildProfile()
+        val range = planCalorieRange(goal, profile.tdee.roundToInt())
+        return customCalories?.coerceIn(range.first, range.last) ?: defaultPlanKcal(profile)
+    }
+
+    /** [buildProfile] carrying [planKcal]; macros re-split from it. Saved at completion. */
+    fun buildPlanProfile(): UserProfile = planProfileFor(buildProfile(), planKcal)
 }
 
 class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
@@ -189,7 +203,7 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
     fun setBirthday(v: LocalDate) { _ui.value = _ui.value.copy(birthday = v) }
     fun setHeight(cm: Int) { _ui.value = _ui.value.copy(heightCm = cm) }
     fun setWeight(kg: Double) {
-        _ui.value = _ui.value.copy(weightKg = kg, goalWeightKg = defaultGoalWeightKg(kg, _ui.value.goal))
+        updatePlanInput { it.copy(weightKg = kg, goalWeightKg = defaultGoalWeightKg(kg, it.goal)) }
     }
     fun setBodyFat(pct: Double?) {
         // Clear the goal alongside the current value so a stale goal doesn't
@@ -201,12 +215,22 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
         )
     }
     fun setGoalBodyFat(pct: Double?) { _ui.value = _ui.value.copy(goalBodyFatPercentage = pct) }
-    fun setActivity(v: ActivityLevel) { _ui.value = _ui.value.copy(activity = v) }
+    fun setActivity(v: ActivityLevel) = updatePlanInput { it.copy(activity = v) }
     fun setGoal(v: WeightGoal) {
-        _ui.value = _ui.value.copy(goal = v, goalWeightKg = defaultGoalWeightKg(_ui.value.weightKg, v))
+        updatePlanInput { it.copy(goal = v, goalWeightKg = defaultGoalWeightKg(it.weightKg, v)) }
     }
-    fun setGoalWeight(v: Double) { _ui.value = _ui.value.copy(goalWeightKg = v) }
-    fun setWeeklyChange(v: Double) { _ui.value = _ui.value.copy(weeklyChangeKg = v) }
+    fun setGoalWeight(v: Double) = updatePlanInput { it.copy(goalWeightKg = v) }
+    fun setWeeklyChange(v: Double) = updatePlanInput { it.copy(weeklyChangeKg = v) }
+
+    /** Applies a change the plan depends on; a slider pick made earlier is dropped so
+     *  Plan Ready follows the pace again. Unchanged values keep the pick. */
+    private fun updatePlanInput(change: (OnboardingState) -> OnboardingState) {
+        val old = _ui.value
+        val new = change(old)
+        if (new == old) return
+        planEdited = false
+        _ui.value = new.copy(customCalories = null, customProtein = null, customCarbs = null, customFat = null)
+    }
     fun setHealthConnectEnabled(v: Boolean) {
         _ui.value = _ui.value.copy(healthConnectEnabled = v)
     }
@@ -244,36 +268,11 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
      *  so its first weekly run can't overwrite their numbers. */
     private var planEdited = false
 
-    /** Building Plan step: compute calorie + macro targets with AI (forecast is null for a new
-     *  user). On success seeds the custom targets the Plan Ready screen shows; on failure leaves
-     *  them null so the formula values are used. Calls [onDone] either way. */
+    /** Building Plan step: only the animation. The plan follows the pace picked on Goal
+     *  Speed (see [OnboardingState.planKcal]); an AI estimate would override it, so none
+     *  runs here — Recalculate in Profile → Goals stays the AI path. */
     fun buildPlanWithAI(onDone: () -> Unit) {
-        viewModelScope.launch {
-            val state = _ui.value
-            val result = runCatching {
-                // A cold on-device engine load (60-90 s+ of uninterruptible
-                // native init + generation) would hold the "Setting up" screen
-                // at 100% with no feedback. Formula targets are the documented
-                // fallback anyway, so only run the AI plan calc when the
-                // on-device engine is already warm.
-                if (state.aiProvider == AIProvider.ON_DEVICE &&
-                    !container.onDeviceLlmGateway.isLoaded
-                ) {
-                    null
-                } else {
-                    container.foodAnalysis.calculateGoals(state.buildProfile(), forecast = null, heightMetric = state.heightMetric, weightMetric = state.weightMetric)
-                }
-            }.getOrNull()
-            if (result != null) {
-                _ui.value = _ui.value.copy(
-                    customCalories = result.calories,
-                    customProtein = result.protein,
-                    customFat = result.fat,
-                    customCarbs = result.carbs,
-                )
-            }
-            onDone()
-        }
+        onDone()
     }
 
     fun next() {
@@ -282,33 +281,14 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /**
-     * Onboarding has no AI step: the app provides a model by default. Order:
-     * 1. the active profile already has a key (or needs none) — keep it;
-     * 2. debug build with a baked GEMINI_API_KEY (secrets.properties) — Gemini with that key;
-     * 3. the phone can run on-device AI — on-device model;
-     * 4. otherwise Gemini without a key; the user adds one in Profile → AI.
+     * Onboarding has no AI step: the active profile always becomes the embedded
+     * on-device model. Nothing is downloaded here — without the model file the
+     * plan is computed by formula.
      */
     private suspend fun applyDefaultAi() {
-        val active = container.prefs.activeAiProfile.first()
-        if (active != null) {
-            val hasKey = !container.keyStore.profileApiKey(active.id).isNullOrBlank()
-            if (!active.provider.requiresApiKey || hasKey) {
-                _ui.value = _ui.value.copy(aiProvider = active.provider, aiModel = active.model ?: active.provider.defaultModel)
-                return
-            }
-        }
-        val debugKey = BuildConfig.GEMINI_API_KEY.trim()
-        val provider = when {
-            debugKey.isNotEmpty() -> AIProvider.GEMINI
-            OnDeviceCapability.isSupported(container.appContext) -> AIProvider.ON_DEVICE
-            else -> AIProvider.GEMINI
-        }
-        val profileId = activeProfileIdFor(provider)
-        container.prefs.editActiveProfile { it.copy(provider = provider, model = provider.defaultModel) }
-        if (provider == AIProvider.GEMINI && debugKey.isNotEmpty()) {
-            container.keyStore.setProfileApiKey(profileId, debugKey)
-        }
-        _ui.value = _ui.value.copy(aiProvider = provider, aiModel = provider.defaultModel)
+        activeProfileIdFor(AIProvider.ON_DEVICE)
+        container.prefs.editActiveProfile { EmbeddedAi.profile(it) }
+        _ui.value = _ui.value.copy(aiProvider = AIProvider.ON_DEVICE, aiModel = EmbeddedAi.modelId)
     }
 
     private fun advanceStep() {
@@ -318,7 +298,7 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     fun back() {
-        val prevStep = OnboardingStep.values().getOrNull(_ui.value.step.ordinal - 1) ?: return
+        val prevStep = previousOnboardingStep(_ui.value.step) ?: return
         _ui.value = _ui.value.copy(step = prevStep)
     }
 
@@ -326,7 +306,7 @@ class OnboardingViewModel(private val container: AppContainer) : ViewModel() {
         viewModelScope.launch {
             _ui.value = _ui.value.copy(submitting = true)
             val state = _ui.value
-            val profile = state.buildProfile()
+            val profile = state.buildPlanProfile()
             container.profileRepository.saveFromOnboarding(profile)
             container.weightRepository.seedInitialWeightIfEmpty(profile.weightKg)
             // Only seed body fat when the user actually entered one in onboarding
@@ -385,6 +365,15 @@ internal fun defaultGoalWeightKg(weightKg: Double, goal: WeightGoal): Double {
     return (base + DEFAULT_WEIGHT_TENTHS).coerceIn(30.0, 250.0)
 }
 
+/**
+ * Step "Back" opens. BUILDING_PLAN advances on its own, so going back from
+ * PLAN_READY skips it — otherwise "Back" would bounce straight to the plan.
+ */
+internal fun previousOnboardingStep(step: OnboardingStep): OnboardingStep? {
+    val prev = OnboardingStep.entries.getOrNull(step.ordinal - 1) ?: return null
+    return if (prev == OnboardingStep.BUILDING_PLAN) previousOnboardingStep(prev) else prev
+}
+
 /** Plan slider step, kcal. */
 internal const val PLAN_SLIDER_STEP_KCAL = 10
 
@@ -399,6 +388,37 @@ internal const val PLAN_MAX_SURPLUS_KCAL = 1000
 internal fun planCalorieRange(goal: WeightGoal, normKcal: Int): IntRange {
     val norm = normKcal.coerceAtLeast(0)
     return if (goal == WeightGoal.GAIN) norm..(norm + PLAN_MAX_SURPLUS_KCAL) else 0..norm
+}
+
+/** The pace plan: maintenance norm plus the pace adjustment of [profile], within [planCalorieRange]. */
+internal fun defaultPlanKcal(profile: UserProfile): Int {
+    val norm = profile.tdee.roundToInt()
+    val range = planCalorieRange(profile.goal, norm)
+    return (norm + profile.calorieAdjustment).coerceIn(range.first, range.last)
+}
+
+/** [base] carrying [planKcal] as its calories; left as is when that is already its own goal. */
+internal fun planProfileFor(base: UserProfile, planKcal: Int): UserProfile =
+    if (planKcal == base.dailyCalories && base.customCalories == null) base
+    else base.copy(customCalories = planKcal)
+
+/**
+ * Plan screen opened from the diary: [profile] at the latest logged weight with
+ * its own calories and macros cleared, so the norm follows the current weight
+ * and the macros re-split from the picked plan — as in onboarding.
+ */
+internal fun planBaseProfile(profile: UserProfile, latestWeightKg: Double?): UserProfile {
+    val weightKg = latestWeightKg ?: profile.weightKg
+    return profile.copy(
+        weightKg = weightKg,
+        // Lose / gain always has a desired weight to edit on the plan screen.
+        goalWeightKg = if (profile.goal == WeightGoal.MAINTAIN) profile.goalWeightKg
+        else profile.goalWeightKg ?: defaultGoalWeightKg(weightKg, profile.goal),
+        customCalories = null,
+        customProtein = null,
+        customCarbs = null,
+        customFat = null,
+    )
 }
 
 /**
@@ -421,3 +441,15 @@ internal fun planDaysToGoal(
     if (dailyKcal <= 0) return null
     return kotlin.math.ceil(gapKg * NutritionConstants.KCAL_PER_KG_BODY_MASS / dailyKcal).toInt()
 }
+
+/** Daily deficit of the fastest offered pace (1 kg a week); a bigger one shows the doctor note. */
+internal val PLAN_WARNING_DEFICIT_KCAL: Int =
+    NutritionConstants.dailyCalorieAdjustmentForWeeklyRateKg(1.0)
+
+/** Plan Ready warns only when losing with a deficit bigger than 1 kg a week. */
+internal fun planNeedsDoctorWarning(goal: WeightGoal, normKcal: Int, planKcal: Int): Boolean =
+    goal == WeightGoal.LOSE && normKcal - planKcal > PLAN_WARNING_DEFICIT_KCAL
+
+/** Recommended minimum in that warning: the 1 kg-a-week plan (norm − 1 100), never below zero. */
+internal fun planMinRecommendedKcal(normKcal: Int): Int =
+    (normKcal - PLAN_WARNING_DEFICIT_KCAL).coerceAtLeast(0)

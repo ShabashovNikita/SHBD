@@ -33,11 +33,6 @@ fun AiSettingsScreen(
             vm = vm,
             onOpenSheet = { sheet = it },
         )
-        SettingsFallbackSection(
-            ui = ui,
-            vm = vm,
-            onOpenSheet = { sheet = it },
-        )
         // Speech and Coach are their own screens now; serving-unit behavior is
         // edited in Food & Entry.
         RelatedLinks(

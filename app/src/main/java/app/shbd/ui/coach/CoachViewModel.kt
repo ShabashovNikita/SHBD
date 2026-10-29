@@ -17,6 +17,9 @@ import app.shbd.models.WeightGoal
 import app.shbd.BuildConfig
 import app.shbd.services.ai.AiError
 import app.shbd.services.ai.userMessage
+import app.shbd.services.ondevice.AiAvailability
+import app.shbd.services.ondevice.ModelCatalog
+import app.shbd.services.ondevice.OnDeviceDownloadState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +28,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.Base64
+import java.util.UUID
 
 /**
  * Sealed wrapper around chip text — either a resource (for our preset chips,
@@ -47,16 +51,42 @@ data class CoachUiState(
     val pendingFood: FoodEntry? = null,
     val pendingWeight: WeightEntry? = null,
     val pendingWater: WaterEntry? = null,
+    /** Active model availability; null until the first value arrives (no card, no auto-answer). */
+    val availability: AiAvailability? = null,
+    val downloadState: OnDeviceDownloadState = OnDeviceDownloadState.NotDownloaded,
+    /** The device can run the local model (ABI + RAM floor). */
+    val localSupported: Boolean = true,
+    /** The "connect a remote model" instructions are open. */
+    val showRemoteHelp: Boolean = false,
+    /** The model download card is the last chat item (see [coachModelAction]). */
+    val showModelCard: Boolean = false,
 )
 
 class CoachViewModel(private val container: AppContainer) : ViewModel() {
     private val _ui = MutableStateFlow(CoachUiState())
     val ui: StateFlow<CoachUiState> = _ui.asStateFlow()
 
+    /** User messages answered (or being answered) in this session; stops repeat auto-answers. */
+    private val handledMessageIds = mutableSetOf<UUID>()
+
     init {
         container.chatRepository.messages
-            .onEach { _ui.value = _ui.value.copy(messages = it) }
+            .onEach {
+                _ui.value = _ui.value.copy(messages = it)
+                evaluateModelAction()
+            }
             .launchIn(viewModelScope)
+
+        container.aiAvailability
+            .onEach {
+                _ui.value = _ui.value.copy(availability = it)
+                evaluateModelAction()
+            }
+            .launchIn(viewModelScope)
+        container.onDeviceModelDownloadManager.state(ModelCatalog.default.modelId)
+            .onEach { _ui.value = _ui.value.copy(downloadState = it) }
+            .launchIn(viewModelScope)
+        _ui.value = _ui.value.copy(localSupported = container.onDeviceSupported)
 
         // Live-subscribe to profile so chips update when the user changes goal in Settings.
         container.profileRepository.profile
@@ -90,62 +120,118 @@ class CoachViewModel(private val container: AppContainer) : ViewModel() {
         )
     }
 
+    /** Shows the download card or answers the waiting message once the model is there. */
+    private fun evaluateModelAction() {
+        val state = _ui.value
+        val availability = state.availability ?: return
+        val last = state.messages.lastOrNull()
+        val action = coachModelAction(last, availability, state.sending, last?.id in handledMessageIds)
+        _ui.value = state.copy(showModelCard = action == CoachModelAction.SHOW_CARD)
+        if (action == CoachModelAction.AUTO_ANSWER && last != null) {
+            handledMessageIds += last.id
+            _ui.value = _ui.value.copy(sending = true, error = null, errorRes = null)
+            // Only the thumbnail is kept in history, so a delayed photo question is answered by text.
+            viewModelScope.launch { answer(last.content, imageBytes = null) }
+        }
+    }
+
     fun send(userText: String, imageBytes: ByteArray? = null, thumbnailBytes: ByteArray? = null) {
         val trimmed = userText.trim()
         if ((trimmed.isBlank() && imageBytes == null) || _ui.value.sending) return
         val text = trimmed.ifEmpty { container.appContext.getString(R.string.coach_image_only_message) }
+        val userMsg = ChatMessage(
+            role = ChatMessage.Role.USER,
+            content = text,
+            attachmentImageBase64 = thumbnailBytes?.let { Base64.getEncoder().encodeToString(it) }
+        )
+        // Mark busy before the message lands so the history observer never auto-answers it too.
+        handledMessageIds += userMsg.id
+        _ui.value = _ui.value.copy(sending = true, error = null, errorRes = null)
         viewModelScope.launch {
-            val userMsg = ChatMessage(
-                role = ChatMessage.Role.USER,
-                content = text,
-                attachmentImageBase64 = thumbnailBytes?.let { Base64.getEncoder().encodeToString(it) }
-            )
             container.chatRepository.append(userMsg)
-            _ui.value = _ui.value.copy(sending = true, error = null, errorRes = null)
-            try {
-                val history = container.chatRepository.contextMessages(limit = 20).dropLast(1) // exclude the just-appended user msg — it's passed separately
-                val profile = container.profileRepository.current()
-                    ?: return@launch run {
-                        _ui.value = _ui.value.copy(
-                            sending = false,
-                            errorRes = R.string.coach_no_profile_error
-                        )
-                    }
-                val weights = container.weightRepository.entries.first()
-                val bodyFats = container.bodyFatRepository.entries.first()
-                val measurements = container.bodyMeasurementRepository.entries.first()
-                val foods = container.foodRepository.entries.first()
-                val heightMetric = container.prefs.heightUnit.first() == "cm"
-                val weightMetric = container.prefs.weightUnit.first() == "kg"
-
-                val result = container.chatService.sendMessage(
-                    history = history,
-                    newUserMessage = text,
-                    profile = profile,
-                    weights = weights,
-                    bodyFats = bodyFats,
-                    measurements = measurements,
-                    foods = foods,
-                    heightMetric = heightMetric,
-                    weightMetric = weightMetric,
-                    imageBytes = imageBytes
-                )
-                container.chatRepository.append(ChatMessage(role = ChatMessage.Role.ASSISTANT, content = result.reply.trim()))
-                _ui.value = _ui.value.copy(
-                    sending = false,
-                    pendingFood = result.proposedFood,
-                    pendingWeight = result.proposedWeight,
-                    pendingWater = result.proposedWater,
-                )
-            } catch (e: AiError) {
-                _ui.value = _ui.value.copy(sending = false, error = e.userMessage(container.appContext))
-            } catch (e: Throwable) {
-                _ui.value = _ui.value.copy(
-                    sending = false,
-                    error = if (BuildConfig.DEBUG) e.javaClass.simpleName else null,
-                    errorRes = R.string.coach_chat_failed,
-                )
+            // No model yet: the message stays in the chat and the card offers a model.
+            if (container.aiAvailability.first() == AiAvailability.MODEL_MISSING) {
+                // Not answered: once the model is downloaded, it gets the automatic answer.
+                handledMessageIds -= userMsg.id
+                _ui.value = _ui.value.copy(sending = false)
+                evaluateModelAction()
+                return@launch
             }
+            answer(text, imageBytes)
+        }
+    }
+
+    /** "Install the local model": makes it the active AI and downloads it over any connection. */
+    fun installLocalModel() {
+        if (!container.onDeviceSupported) return
+        viewModelScope.launch {
+            container.prefs.useEmbeddedModel()
+            val entry = ModelCatalog.default
+            if (!container.onDeviceModelDownloadManager.isDownloaded(entry)) {
+                container.onDeviceModelDownloadManager.startDownload(entry, overWifiOnly = false)
+            }
+        }
+    }
+
+    fun showRemoteHelp(show: Boolean) {
+        _ui.value = _ui.value.copy(showRemoteHelp = show)
+    }
+
+    /** Instructions → Profile → AI Provider (same inbox the shbd://go/settings/ai link uses). */
+    fun openAiProvider() {
+        _ui.value = _ui.value.copy(showRemoteHelp = false)
+        container.launchDestinationInbox.value = app.shbd.ui.navigation.ShbdRoutes.SETTINGS_AI
+    }
+
+    fun cancelModelDownload() {
+        container.onDeviceModelDownloadManager.cancelDownload()
+    }
+
+    /** Asks the coach about the last user message [text] (already in the history). */
+    private suspend fun answer(text: String, imageBytes: ByteArray?) {
+        try {
+            val history = container.chatRepository.contextMessages(limit = 20).dropLast(1) // exclude the just-appended user msg — it's passed separately
+            val profile = container.profileRepository.current()
+                ?: return run {
+                    _ui.value = _ui.value.copy(
+                        sending = false,
+                        errorRes = R.string.coach_no_profile_error
+                    )
+                }
+            val weights = container.weightRepository.entries.first()
+            val bodyFats = container.bodyFatRepository.entries.first()
+            val measurements = container.bodyMeasurementRepository.entries.first()
+            val foods = container.foodRepository.entries.first()
+            val heightMetric = container.prefs.heightUnit.first() == "cm"
+            val weightMetric = container.prefs.weightUnit.first() == "kg"
+
+            val result = container.chatService.sendMessage(
+                history = history,
+                newUserMessage = text,
+                profile = profile,
+                weights = weights,
+                bodyFats = bodyFats,
+                measurements = measurements,
+                foods = foods,
+                heightMetric = heightMetric,
+                weightMetric = weightMetric,
+                imageBytes = imageBytes
+            )
+            container.chatRepository.append(ChatMessage(role = ChatMessage.Role.ASSISTANT, content = result.reply.trim()))
+            _ui.value = _ui.value.copy(
+                sending = false,
+                pendingFood = result.proposedFood,
+                pendingWeight = result.proposedWeight,
+                pendingWater = result.proposedWater,
+            )
+        } catch (e: AiError) {
+            _ui.value = _ui.value.copy(sending = false, error = e.userMessage(container.appContext))
+        } catch (e: Throwable) {
+            _ui.value = _ui.value.copy(
+                sending = false,
+                error = if (BuildConfig.DEBUG) e.javaClass.simpleName else null,
+                errorRes = R.string.coach_chat_failed,
+            )
         }
     }
 

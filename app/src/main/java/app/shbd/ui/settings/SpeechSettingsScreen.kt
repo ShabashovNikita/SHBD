@@ -13,7 +13,7 @@ import app.shbd.AppContainer
 import app.shbd.R
 import app.shbd.ui.navigation.ShbdRoutes
 
-/** Speech-to-text provider, language and key — split out of AI Provider. */
+/** Voice input language (system recognizer only). */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SpeechSettingsScreen(

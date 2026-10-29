@@ -181,7 +181,6 @@
     <string name="onboarding_pace_caption_slow">لطيف ومستدام. رائع للعادات طويلة المدى.</string>
     <string name="onboarding_pace_caption_fast">حازم لكنه قابل للتنفيذ. يتطلب انضباطًا قويًا.</string>
     <string name="onboarding_pace_caption_recommended">الوتيرة الأكثر توازنًا، محفّزة ومستدامة.</string>
-    <string name="onboarding_pace_capped">هذا المعدل غير ممكن لجسمك دون النزول تحت معدل الأيض أثناء الراحة المقدر. سيكون هدفك %1$d سعرة حرارية. %2$s</string>
 
     <string name="onboarding_notifications_title">احصل على تذكيرات\nلتسجيل الوجبات</string>
     <string name="onboarding_notifications_subtitle">احصل على تذكيرات لطيفة في أوقات الوجبات\nحتى لا تنسى التتبع أبدًا.</string>
@@ -224,8 +223,6 @@
 
     <string name="onboarding_plan_title">خطتك</string>
     <string name="onboarding_plan_daily_calories">السعرات اليومية</string>
-    <string name="onboarding_plan_doctor_title">يرجى استشارة طبيب</string>
-    <string name="onboarding_plan_doctor_message">الحد الأدنى الموصى به هو %1$s حرارية يوميًا.</string>
     <string name="onboarding_minor_title">صيغ للبالغين فقط</string>
     <string name="onboarding_minor_message">يستخدم هذا التطبيق صيغ سعرات حرارية للبالغين. إذا كان عمرك أقل من 18 عامًا، اسأل مختصًا صحيًا قبل استخدام هذه الأهداف.</string>
     <string name="onboarding_minor_continue">أفهم</string>
@@ -838,9 +835,7 @@
     <string name="saved_to_favorites">تم الحفظ في المفضلة</string>
     <string name="action_what_if">ماذا لو؟</string>
     <string name="add_food_relog_kcal">%1$d سعرة %2$s</string>
-    <string name="ai_error_coach_on_device">المدرب غير متاح بعد مع المزوّد المحلي. انتقل إلى مزوّد سحابي في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
     <string name="ai_error_coach_round_limit">تعذّر على المدرب الرد. حاول إعادة صياغة السؤال.</string>
-    <string name="ai_error_disabled">ميزات الذكاء الاصطناعي معطّلة في الإعدادات ← الذكاء الاصطناعي والصوت.</string>
     <string name="ai_error_grounded_on_device">حلقة أدوات Grounded غير متاحة للنماذج المحلية.</string>
     <string name="ai_error_grounded_requires_provider">حلقة أدوات Grounded تتطلب مزوّد ذكاء اصطناعي نشطًا.</string>
     <string name="ai_error_image_conversion_failed">تعذّرت معالجة الصورة.</string>
@@ -851,11 +846,6 @@
     <string name="ai_error_location_unsupported">Gemini غير متاح من هذا الموقع الشبكي (البلد/عنوان IP). إذا كنت تستخدم VPN، فأوقفه أو انتقل إلى مخرج سكني. غالبًا ما تُحظر عناوين IP الخاصة بمراكز البيانات/VPN غير السكنية. أو فعّل الفوترة في مشروع Google AI Studio، وجرّب شبكة أخرى، أو غيّر المزوّد في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
     <string name="ai_error_model_unavailable">لم يعثر مزوّدك على هذا النموذج. قد يكون مدفوعًا حصريًا في الخطة المجانية، أو مقيدًا في منطقتك، أو قد تكون نقطة النهاية خاطئة. انتقل إلى نموذج Flash الافتراضي في الإعدادات ← مزوّد الذكاء الاصطناعي، أو فعّل الفوترة في مشروع AI Studio.</string>
     <string name="ai_error_network_format">خطأ في الشبكة: %1$s</string>
-    <string name="ai_error_no_api_key">لا يوجد مفتاح API مهيأ. أضف مفتاحك في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
-    <string name="ai_error_on_device_low_memory">لا توجد ذاكرة حرة كافية للذكاء الاصطناعي المحلي الآن. جرّب نموذج E2B الأصغر، أو أغلق تطبيقات أخرى، أو غيّر المزوّد في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
-    <string name="ai_error_on_device_engine_init">تعذّر بدء تشغيل محرك النموذج على هذا الجهاز. أعد المحاولة، أو ألغِ تحميل النموذج في الإعدادات ← مزوّد الذكاء الاصطناعي ← النموذج، أو بدّل إلى مزوّد سحابي.</string>
-    <string name="ai_error_on_device_model_not_downloaded">النموذج المحلي لم يُنزَّل بعد. افتح الإعدادات ← مزوّد الذكاء الاصطناعي ← النموذج لتنزيله.</string>
-    <string name="ai_error_on_device_unsupported_device">لا يستوفي هذا الجهاز متطلبات الذكاء الاصطناعي المحلي. اختر مزوّدًا سحابيًا في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
     <string name="ai_error_provider_error">أرجع مزوّد الذكاء الاصطناعي خطأ.</string>
     <string name="ai_error_provider_overloaded">مزوّد الذكاء الاصطناعي محمّل فوق طاقته الآن. حاولنا عدة مرات. أعد المحاولة بعد دقيقة، أو غيّر المزوّد/النموذج في الإعدادات ← مزوّد الذكاء الاصطناعي.</string>
     <string name="ai_error_rate_limit">بلغت حد الطلبات لمفتاح API الخاص بك. انتظر دقيقة، أو انتقل إلى مزوّد آخر في الإعدادات ← مزوّد الذكاء الاصطناعي. في الخطة المجانية، يملك نموذج Flash-Lite أعلى حصة.</string>
@@ -1349,7 +1339,6 @@
     <string name="settings_accuracy_title">دقة التقديرات</string>
     <string name="settings_adaptive_goals">أهداف تكيفية</string>
     <string name="settings_ai_features_master">ميزات الذكاء الاصطناعي</string>
-    <string name="settings_ai_features_master_footer">يطفئ كل ما يرسل بيانات إلى مزوّد ذكاء اصطناعي: المدرب، والتسجيل بالصورة/النص/الصوت، و«ماذا لو؟»، واقتراحات الأهداف بالذكاء الاصطناعي. الرمز الشريطي والبحث عن الطعام والإدخال اليدوي والوجبات المحفوظة والماء والمزامنة وHealth Connect تستمر بالعمل.</string>
     <string name="settings_ai_privacy_cloud">تُرسل صور الطعام والملاحظات والمحادثة وبيانات الملف إلى هذا المزوّد. نماذج Gemma 4 المحلية فقط تُبقي كل شيء على هاتفك.</string>
     <string name="settings_ai_privacy_ollama">يعمل Ollama على جهاز الكمبيوتر الخاص بك. لا يُرسل شيء إلى مزوّد سحابي.</string>
     <string name="settings_ai_privacy_ondevice">خاص تمامًا: تحليل الطعام و«ماذا لو؟» وتقديرات الأهداف تعمل على هذا الجهاز. لا يُرسل شيء إلى خادم.</string>

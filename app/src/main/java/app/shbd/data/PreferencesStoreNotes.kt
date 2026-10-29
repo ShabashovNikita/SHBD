@@ -29,6 +29,15 @@ internal val PreferencesStore.mealPlanningEnabledImpl: Flow<Boolean>
 internal suspend fun PreferencesStore.setMealPlanningEnabledImpl(v: Boolean) =
     setBoolPref(Keys.MEAL_PLANNING_ENABLED, v)
 
+/** The meal-planning toggle left Food & Entry: a mode left on would have no switch, so turn it off once. */
+internal suspend fun PreferencesStore.disableMealPlanningOnceImpl() {
+    dataStore.edit { prefs ->
+        if (prefs[Keys.MEAL_PLANNING_RETIRED] == true) return@edit
+        prefs[Keys.MEAL_PLANNING_ENABLED] = false
+        prefs[Keys.MEAL_PLANNING_RETIRED] = true
+    }
+}
+
 internal val PreferencesStore.noteEntriesImpl: Flow<List<DailyNote>>
     get() = flow {
         emitAll(noteBucketStore.allFlow())

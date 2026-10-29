@@ -158,12 +158,7 @@ internal suspend fun PreferencesStore.editActiveProfileImpl(
         val list = decodeAiProfiles(prefs[Keys.AI_PROFILES_JSON]).toMutableList()
         if (list.isEmpty()) {
             if (!createIfMissing) return@edit
-            list += AiProfile(
-                id = UUID.randomUUID(),
-                name = AIProvider.GEMINI.name,
-                provider = AIProvider.GEMINI,
-                createdAt = Instant.now(),
-            )
+            list += embeddedAiProfile()
         }
         val activeId = prefs[Keys.ACTIVE_AI_PROFILE_ID]
         val idx = list.indexOfFirst { it.id.toString() == activeId }.takeIf { it >= 0 } ?: 0
@@ -344,7 +339,6 @@ internal suspend fun PreferencesStore.ensureAiProfilesMigratedImpl(keyStore: Key
         if (prefs[Keys.AI_PROFILES_JSON] != null) return@edit
 
         val legacyProvider = AIProvider.values().firstOrNull { it.name == prefs[Keys.SELECTED_AI_PROVIDER] }
-            ?: AIProvider.GEMINI
         val legacyModel = prefs[Keys.SELECTED_AI_MODEL]
         val legacyFallback = AIProvider.values().firstOrNull { it.name == prefs[Keys.FALLBACK_PROVIDER] }
 
@@ -381,14 +375,9 @@ internal suspend fun PreferencesStore.ensureAiProfilesMigratedImpl(keyStore: Key
             keyStore.setProfileApiKey(profile.id, key)
         }
 
-        var activeId = activeIds[legacyProvider]
+        var activeId = legacyProvider?.let { activeIds[it] }
         if (profiles.isEmpty()) {
-            val def = AiProfile(
-                id = UUID.randomUUID(),
-                name = uniqueName(context.getString(AIProvider.GEMINI.displayNameRes)),
-                provider = AIProvider.GEMINI,
-                createdAt = Instant.now(),
-            )
+            val def = embeddedAiProfile().let { it.copy(name = uniqueName(it.name)) }
             profiles += def
             activeId = def.id.toString()
         }
@@ -621,6 +610,8 @@ internal suspend fun PreferencesStore.setMealConstituentsEnabledImpl(v: Boolean)
 
     // -- Speech Provider selection ---------------------------------------
 internal val PreferencesStore.selectedSpeechProviderImpl: Flow<SpeechProvider> get() = dataStore.data.map {
+        // Voice input is always the system recognizer (see EmbeddedAi.enforced).
+        if (EmbeddedAi.enforced) return@map SpeechProvider.NATIVE
         val raw = it[Keys.SELECTED_SPEECH_PROVIDER]
         SpeechProvider.values().firstOrNull { p -> p.name == raw } ?: SpeechProvider.NATIVE
     }

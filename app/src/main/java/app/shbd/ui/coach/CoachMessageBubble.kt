@@ -122,7 +122,9 @@ internal fun MessageList(
     sending: Boolean,
     error: String?,
     listState: LazyListState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** Extra last item after the messages (the model download card). */
+    footer: (@Composable () -> Unit)? = null,
 ) {
     val isDark = isDarkTheme()
     LazyColumn(
@@ -132,6 +134,10 @@ internal fun MessageList(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         items(messages, key = { it.id }) { MessageBubble(it) }
+
+        if (footer != null) {
+            item("model-card") { footer() }
+        }
 
         if (sending) {
             item("typing") {
@@ -233,7 +239,7 @@ internal fun MessageBubble(msg: ChatMessage) {
 
 /** 26dp translucent disc with gradient sparkles icon. Verbatim port of `assistantBadge`. */
 @Composable
-private fun AssistantBadge() {
+internal fun AssistantBadge() {
     val isDark = isDarkTheme()
     Box(
         Modifier

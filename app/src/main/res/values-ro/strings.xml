@@ -176,7 +176,6 @@
     <string name="onboarding_pace_caption_slow">Blând și sustenabil. Excelent pentru obiceiuri pe termen lung.</string>
     <string name="onboarding_pace_caption_fast">Agresiv, dar realizabil. Necesită disciplină puternică.</string>
     <string name="onboarding_pace_caption_recommended">Cel mai echilibrat ritm, motivant și sustenabil.</string>
-    <string name="onboarding_pace_capped">Acest ritm nu este posibil pentru fizicul tău fără să scadă sub metabolismul de repaus estimat. Obiectivul tău va fi de %1$d %2$s.</string>
 
     <string name="onboarding_notifications_title">Fii notificat să\nînregistrezi mesele</string>
     <string name="onboarding_notifications_subtitle">Primește mementouri blânde la orele meselor\nca să nu uiți să urmărești.</string>
@@ -219,8 +218,6 @@
 
     <string name="onboarding_plan_title">Planul tău</string>
     <string name="onboarding_plan_daily_calories">calorii zilnice</string>
-    <string name="onboarding_plan_doctor_title">Consultă un medic</string>
-    <string name="onboarding_plan_doctor_message">Recomandarea minimă este de %1$sde calorii pe zi.</string>
     <string name="onboarding_minor_title">Doar formule pentru adulți</string>
     <string name="onboarding_minor_message">Această aplicație folosește formule de calorii pentru adulți. Dacă ai sub 18 ani, întreabă un specialist în sănătate înainte de a folosi aceste obiective.</string>
     <string name="onboarding_minor_continue">Am înțeles</string>
@@ -827,9 +824,7 @@
     <string name="saved_to_favorites">Salvat în favorite</string>
     <string name="action_what_if">Ce-ar fi?</string>
     <string name="add_food_relog_kcal">%1$d %2$s</string>
-    <string name="ai_error_coach_on_device">Antrenorul nu este încă disponibil cu furnizorul local. Comută la un furnizor cloud în Setări → Furnizor IA.</string>
     <string name="ai_error_coach_round_limit">Antrenorul nu a putut răspunde. Încearcă să reformulezi întrebarea.</string>
-    <string name="ai_error_disabled">Funcțiile IA sunt dezactivate în Setări → IA și voce.</string>
     <string name="ai_error_grounded_on_device">Modul Grounded nu este disponibil pentru modelele locale.</string>
     <string name="ai_error_grounded_requires_provider">Modul Grounded necesită un furnizor IA activ.</string>
     <string name="ai_error_image_conversion_failed">Procesarea imaginii a eșuat.</string>
@@ -840,11 +835,6 @@
     <string name="ai_error_location_unsupported">Gemini nu este disponibil din această locație de rețea (țară/IP). Dacă folosești VPN, dezactivează-l sau comută la o ieșire rezidențială. IP-urile de datacenter/nerezidențiale VPN sunt adesea blocate. Sau activează facturarea în proiectul Google AI Studio, încearcă altă rețea sau schimbă furnizorul în Setări → Furnizor IA.</string>
     <string name="ai_error_model_unavailable">Furnizorul tău nu a găsit acest model. Poate fi plătit pe planul gratuit, restricționat în regiunea ta sau endpoint-ul poate fi greșit. Comută la modelul Flash implicit în Setări → Furnizor IA sau activează facturarea în proiectul tău AI Studio.</string>
     <string name="ai_error_network_format">Eroare de rețea: %1$s</string>
-    <string name="ai_error_no_api_key">Nicio cheie API configurată. Adaugă cheia ta în Setări → Furnizor IA.</string>
-    <string name="ai_error_on_device_low_memory">Nu este suficientă memorie liberă pentru AI pe dispozitiv chiar acum. Încearcă modelul E2B mai mic, închide alte aplicații sau schimbă furnizorul în Setări → Furnizor IA.</string>
-    <string name="ai_error_on_device_engine_init">Motorul modelului nu a putut fi pornit pe acest dispozitiv. Încearcă din nou, descarcă modelul din Setări → Furnizor AI → Model sau comută la un furnizor cloud.</string>
-    <string name="ai_error_on_device_model_not_downloaded">Modelul local nu a fost încă descărcat. Deschide Setări → Furnizor IA → Model pentru a-l descărca.</string>
-    <string name="ai_error_on_device_unsupported_device">Acest dispozitiv nu îndeplinește cerințele pentru IA locală. Alege un furnizor cloud în Setări → Furnizor IA.</string>
     <string name="ai_error_provider_error">Furnizorul IA a returnat o eroare.</string>
     <string name="ai_error_provider_overloaded">Furnizorul IA este suprasolicitat acum. Am încercat de câteva ori. Încearcă din nou într-un minut sau schimbă furnizorul/modelul în Setări → Furnizor IA.</string>
     <string name="ai_error_rate_limit">Limită de cereri atinsă pentru cheia ta API. Așteaptă un minut sau schimbă furnizorul în Setări → Furnizor IA. Pe planul gratuit, modelul Flash-Lite are cea mai mare cotă.</string>
@@ -1341,7 +1331,6 @@
     <string name="settings_accuracy_title">Acuratețea estimărilor</string>
     <string name="settings_adaptive_goals">Obiective adaptive</string>
     <string name="settings_ai_features_master">Funcții IA</string>
-    <string name="settings_ai_features_master_footer">Dezactivează tot ce trimite date unui furnizor IA: antrenorul, înregistrarea foto/text/voce, «Ce-ar fi?» și sugestiile de obiective IA. Codul de bare, căutarea alimentelor, înregistrarea manuală, mesele salvate, apa, sincronizarea și Health Connect continuă să funcționeze.</string>
     <string name="settings_ai_model">Model</string>
     <string name="settings_ai_privacy_cloud">Fotografiile cu mâncare, notele, chatul și datele profilului sunt trimise acestui furnizor. Doar modelele locale Gemma 4 păstrează totul pe telefon.</string>
     <string name="settings_ai_privacy_ollama">Ollama rulează pe propriul tău computer. Nimic nu este trimis unui furnizor cloud.</string>

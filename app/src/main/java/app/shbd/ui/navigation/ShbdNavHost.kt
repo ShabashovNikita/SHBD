@@ -40,6 +40,7 @@ import app.shbd.ui.about.AboutSettingsScreen
 import app.shbd.ui.about.LegalSettingsScreen
 import app.shbd.ui.about.SupportSettingsScreen
 import app.shbd.ui.coach.CoachScreen
+import app.shbd.ui.diary.CaloriePlanScreen
 import app.shbd.ui.diary.DiaryDashboardScreen
 import app.shbd.ui.diary.blocks.DiaryBlock
 import app.shbd.ui.diary.blocks.DiaryBlockActions
@@ -264,7 +265,7 @@ fun ShbdNavHost(
                             nav.navigate(ShbdRoutes.diaryBlock(block, add)) { launchSingleTop = true }
                         },
                         onOpenGoals = {
-                            nav.navigate(ShbdRoutes.SETTINGS_GOALS) { launchSingleTop = true }
+                            nav.navigate(ShbdRoutes.CALORIE_PLAN) { launchSingleTop = true }
                         },
                         onOpenHealthSettings = {
                             nav.navigate(ShbdRoutes.SETTINGS_HEALTH) { launchSingleTop = true }
@@ -319,9 +320,15 @@ fun ShbdNavHost(
                                 onPlanWeek = {
                                     nav.navigate(ShbdRoutes.PLAN_WEEK) { launchSingleTop = true }
                                 },
+                                onOpenCaloriePlan = {
+                                    nav.navigate(ShbdRoutes.CALORIE_PLAN) { launchSingleTop = true }
+                                },
                             ),
                         )
                     }
+                }
+                composable(ShbdRoutes.CALORIE_PLAN) {
+                    CaloriePlanScreen(container = container, onBack = { nav.popBackStack() })
                 }
                 composable(ShbdRoutes.PLAN_WEEK) {
                     PlanWeekScreen(container = container, nav = nav)

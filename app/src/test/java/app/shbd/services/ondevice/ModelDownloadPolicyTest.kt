@@ -109,6 +109,7 @@ class ModelDownloadPolicyTest {
         isDownloaded: Boolean = false,
         workMatchesEntry: Boolean = true,
         failureReason: String? = null,
+        networkUnavailable: Boolean = false,
     ) = ModelDownloadPolicy.mapState(
         workState = workState,
         workMatchesEntry = workMatchesEntry,
@@ -118,6 +119,7 @@ class ModelDownloadPolicyTest {
         isDownloaded = isDownloaded,
         failureReason = failureReason,
         defaultFailure = "fail",
+        networkUnavailable = networkUnavailable,
     )
 
     @Test
@@ -203,5 +205,29 @@ class ModelDownloadPolicyTest {
     @Test(expected = IOException::class)
     fun skipFully_eofThrows() {
         ModelDownloadPolicy.skipFully(ByteArrayInputStream(ByteArray(4)), 10)
+    }
+
+    @Test
+    fun mapState_enqueuedWithoutRequiredNetworkIsWaiting() {
+        assertEquals(
+            OnDeviceDownloadState.WaitingForNetwork(40),
+            map(WorkInfo.State.ENQUEUED, partProgress = 40, networkUnavailable = true),
+        )
+    }
+
+    @Test
+    fun mapState_runningIgnoresNetworkFlag() {
+        assertEquals(
+            OnDeviceDownloadState.Downloading(40),
+            map(WorkInfo.State.RUNNING, workProgressPercent = 40, networkUnavailable = true),
+        )
+    }
+
+    @Test
+    fun mapState_downloadedFileWinsOverWaiting() {
+        assertEquals(
+            OnDeviceDownloadState.Downloaded,
+            map(WorkInfo.State.ENQUEUED, isDownloaded = true, networkUnavailable = true),
+        )
     }
 }

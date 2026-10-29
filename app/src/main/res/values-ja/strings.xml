@@ -180,7 +180,6 @@
     <string name="onboarding_pace_caption_slow">穏やかで持続可能。長期的な習慣に最適。</string>
     <string name="onboarding_pace_caption_fast">積極的だが実行可能。強い自制心が必要です。</string>
     <string name="onboarding_pace_caption_recommended">最もバランスの取れたペースで、モチベーションを保ち持続可能。</string>
-    <string name="onboarding_pace_capped">このペースは、推定安静時代謝を下回らずにあなたの体格では不可能です。目標は%1$d kcalになります。 %2$s</string>
 
     <string name="onboarding_notifications_title">食事の記録を\nリマインド</string>
     <string name="onboarding_notifications_subtitle">食事の時間に優しくリマインドして\n記録を忘れないようサポートします。</string>
@@ -223,8 +222,6 @@
 
     <string name="onboarding_plan_title">あなたのプラン</string>
     <string name="onboarding_plan_daily_calories">1日のカロリー</string>
-    <string name="onboarding_plan_doctor_title">医師にご相談ください</string>
-    <string name="onboarding_plan_doctor_message">推奨される最低量は1日%1$sです。</string>
     <string name="onboarding_minor_title">大人向けの計算式のみ</string>
     <string name="onboarding_minor_message">このアプリは大人向けのカロリー計算式を使用します。18歳未満の場合は、これらの目標を使う前に医療専門家に相談してください。</string>
     <string name="onboarding_minor_continue">理解しました</string>
@@ -833,9 +830,7 @@
     <string name="saved_to_favorites">お気に入りに保存しました</string>
     <string name="action_what_if">どうなる？</string>
     <string name="add_food_relog_kcal">%1$d %2$s</string>
-    <string name="ai_error_coach_on_device">コーチはまだオンデバイスプロバイダーに対応していません。設定 → AI プロバイダーでクラウドプロバイダーに切り替えてください。</string>
     <string name="ai_error_coach_round_limit">コーチは回答できませんでした。質問の言い方を変えてみてください。</string>
-    <string name="ai_error_disabled">AI 機能は設定 → AI と音声でオフになっています。</string>
     <string name="ai_error_grounded_on_device">Grounded モードはオンデバイスモデルでは利用できません。</string>
     <string name="ai_error_grounded_requires_provider">Grounded モードには有効な AI プロバイダーが必要です。</string>
     <string name="ai_error_image_conversion_failed">画像を処理できませんでした。</string>
@@ -846,11 +841,6 @@
     <string name="ai_error_location_unsupported">Gemini はこのネットワーク環境（国/IP）では利用できません。VPN を使用している場合はオフにするか、住宅用出口に切り替えてください。データセンター/非住宅用 VPN IP はよくブロックされます。Google AI Studio プロジェクトで課金を有効にするか、別のネットワークを試すか、設定 → AI プロバイダーでプロバイダーを変更してください。</string>
     <string name="ai_error_model_unavailable">プロバイダーがこのモデルを見つけられませんでした。無料プランでは有料のみ、地域で制限されている、またはエンドポイントが間違っている可能性があります。設定 → AI プロバイダーでデフォルトの Flash モデルに切り替えるか、AI Studio プロジェクトで課金を有効にしてください。</string>
     <string name="ai_error_network_format">ネットワークエラー：%1$s</string>
-    <string name="ai_error_no_api_key">API キーが設定されていません。設定 → AI プロバイダーでキーを追加してください。</string>
-    <string name="ai_error_on_device_low_memory">現在、オンデバイスでのAIに十分な空きメモリがありません。小さい E2B モデルを試すか、他のアプリを閉じるか、設定 → AI プロバイダーでプロバイダーを変更してください。</string>
-    <string name="ai_error_on_device_engine_init">このデバイスでモデルエンジンを起動できませんでした。もう一度お試しください。設定 → AIプロバイダー → モデルでモデルをアンロードするか、クラウドプロバイダーに切り替えてください。</string>
-    <string name="ai_error_on_device_model_not_downloaded">オンデバイスモデルがまだダウンロードされていません。設定 → AI プロバイダー → モデルを開いてダウンロードしてください。</string>
-    <string name="ai_error_on_device_unsupported_device">このデバイスはオンデバイス AI の要件を満たしていません。設定 → AI プロバイダーでクラウドプロバイダーを選択してください。</string>
     <string name="ai_error_provider_error">AI プロバイダーがエラーを返しました。</string>
     <string name="ai_error_provider_overloaded">AI プロバイダーが現在過負荷です。数回再試行しました。1分後に再度お試しいただくか、設定 → AI プロバイダーでプロバイダー/モデルを変更してください。</string>
     <string name="ai_error_rate_limit">API キーのリクエスト上限に達しました。1分待つか、設定 → AI プロバイダーで別のプロバイダーに切り替えてください。無料プランでは Flash-Lite モデルの割り当てが最も多いです。</string>
@@ -1344,7 +1334,6 @@
     <string name="settings_accuracy_title">推定の精度</string>
     <string name="settings_adaptive_goals">適応型目標</string>
     <string name="settings_ai_features_master">AI 機能</string>
-    <string name="settings_ai_features_master_footer">AI プロバイダーにデータを送信するすべての機能をオフにします：コーチ、写真/テキスト/音声記録、「どうなる？」、AI 目標提案。バーコード、食品検索、手動入力、保存した食事、水、同期、Health Connect は通常どおり動作します。</string>
     <string name="settings_ai_privacy_cloud">食品の写真、メモ、チャット、プロフィールデータはこのプロバイダーに送信されます。オンデバイスの Gemma 4 モデルのみがすべてを端末に保持します。</string>
     <string name="settings_ai_privacy_ollama">Ollama はお使いのコンピューターで動作します。クラウドプロバイダーには何も送信されません。</string>
     <string name="settings_ai_privacy_ondevice">完全プライベート：食品分析、「どうなる？」、目標推定はこのデバイスで動作し、サーバーには何も送信されません。</string>

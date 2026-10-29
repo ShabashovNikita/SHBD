@@ -1,6 +1,8 @@
 package app.shbd.services.ondevice
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import app.shbd.R
@@ -9,11 +11,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 
 sealed class OnDeviceDownloadState {
     object NotDownloaded : OnDeviceDownloadState()
     data class Downloading(val progressPercent: Int) : OnDeviceDownloadState()
+    /** Queued: the required network (Wi-Fi for "Wi-Fi only") is not available yet. */
+    data class WaitingForNetwork(val progressPercent: Int) : OnDeviceDownloadState()
     object Verifying : OnDeviceDownloadState()
     object Downloaded : OnDeviceDownloadState()
     data class Failed(val message: String) : OnDeviceDownloadState()
@@ -60,6 +64,21 @@ class ModelDownloadManager(private val context: Context) {
         return gone
     }
 
+    /**
+     * Deletes files of models the app no longer offers (E4B) without touching
+     * a running download of the embedded model.
+     */
+    fun deleteRetiredModels() {
+        val retired = ModelCatalog.allKnown - ModelCatalog.entries.toSet()
+        for (entry in retired) {
+            val partFile = File(modelsDir(), "${entry.filename}.part")
+            partFile.delete()
+            ModelDownloadHasher.deleteSidecar(partFile)
+            modelFile(entry).delete()
+        }
+        _storageEpoch.value++
+    }
+
     /** Wipes every model file, leftover `.part`, sidecar, and LiteRT cache. */
     fun deleteAll() {
         cancelDownload()
@@ -70,9 +89,10 @@ class ModelDownloadManager(private val context: Context) {
     /** Live download state for [modelId], driven by [ModelDownloadWorker] + WorkManager. */
     fun state(modelId: String): Flow<OnDeviceDownloadState> {
         val entry = ModelCatalog.forModelId(modelId)
+        // storageEpoch re-maps after a delete: WorkManager does not re-emit for file changes.
         return WorkManager.getInstance(context)
             .getWorkInfosForUniqueWorkFlow(ModelDownloadWorker.UNIQUE_NAME)
-            .map { infos -> mapWorkState(infos.firstOrNull(), entry) }
+            .combine(storageEpoch) { infos, _ -> mapWorkState(infos.firstOrNull(), entry) }
     }
 
     private fun mapWorkState(info: WorkInfo?, entry: OnDeviceModelEntry): OnDeviceDownloadState {
@@ -91,6 +111,16 @@ class ModelDownloadManager(private val context: Context) {
             isDownloaded = isDownloaded(entry),
             failureReason = info?.outputData?.getString(ModelDownloadWorker.FAILURE_REASON),
             defaultFailure = context.getString(R.string.on_device_download_failed),
+            networkUnavailable = info?.state == WorkInfo.State.ENQUEUED &&
+                !networkAvailable(wifiOnly = ModelDownloadWorker.WIFI_ONLY_TAG in info.tags),
         )
+    }
+
+    /** Whether the network the queued download needs is up right now. */
+    private fun networkAvailable(wifiOnly: Boolean): Boolean {
+        val cm = context.getSystemService(ConnectivityManager::class.java) ?: return true
+        val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return false
+        if (!caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) return false
+        return !wifiOnly || caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
     }
 }

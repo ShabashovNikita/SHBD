@@ -181,7 +181,6 @@
     <string name="onboarding_pace_caption_slow">सौम्य और टिकाऊ। दीर्घकालिक आदतों के लिए बढ़िया।</string>
     <string name="onboarding_pace_caption_fast">तीव्र लेकिन संभव। मज़बूत अनुशासन की ज़रूरत है।</string>
     <string name="onboarding_pace_caption_recommended">सबसे संतुलित गति, प्रेरक और टिकाऊ।</string>
-    <string name="onboarding_pace_capped">यह गति आपके शरीर के लिए अनुमानित आराम चयापचय से नीचे जाए बिना संभव नहीं है। आपका लक्ष्य %1$d किलो कैलोरी होगा। %2$s</string>
 
     <string name="onboarding_notifications_title">भोजन लॉग करने के\nलिए याद दिलाया जाए</string>
     <string name="onboarding_notifications_subtitle">भोजन के समय हल्की याद दिलावटें पाएँ\nताकि आप ट्रैक करना न भूलें।</string>
@@ -224,8 +223,6 @@
 
     <string name="onboarding_plan_title">आपका प्लान</string>
     <string name="onboarding_plan_daily_calories">दैनिक कैलोरी</string>
-    <string name="onboarding_plan_doctor_title">कृपया डॉक्टर से सलाह लें</string>
-    <string name="onboarding_plan_doctor_message">न्यूनतम अनुशंसा प्रतिदिन %1$sकैलोरी है।</string>
     <string name="onboarding_minor_title">केवल वयस्कों के लिए फ़ॉर्मूले</string>
     <string name="onboarding_minor_message">यह ऐप वयस्कों के लिए कैलोरी फ़ॉर्मूले का उपयोग करता है। यदि आप 18 वर्ष से कम हैं, तो इन लक्ष्यों का उपयोग करने से पहले किसी स्वास्थ्य विशेषज्ञ से पूछें।</string>
     <string name="onboarding_minor_continue">मैं समझ गया</string>
@@ -834,9 +831,7 @@
     <string name="saved_to_favorites">पसंदीदा में सहेजा गया</string>
     <string name="action_what_if">क्या होगा अगर?</string>
     <string name="add_food_relog_kcal">%1$d %2$s</string>
-    <string name="ai_error_coach_on_device">कोच अभी ऑन-डिवाइस प्रदाता के साथ उपलब्ध नहीं है। सेटिंग्स → AI प्रदाता में क्लाउड प्रदाता पर स्विच करें।</string>
     <string name="ai_error_coach_round_limit">कोच जवाब नहीं दे सका। अपना प्रश्न दोबारा लिखकर देखें।</string>
-    <string name="ai_error_disabled">AI सुविधाएं सेटिंग्स → AI और भाषण में बंद हैं।</string>
     <string name="ai_error_grounded_on_device">Grounded मोड ऑन-डिवाइस मॉडल के लिए उपलब्ध नहीं है।</string>
     <string name="ai_error_grounded_requires_provider">Grounded मोड के लिए एक सक्रिय AI प्रदाता आवश्यक है।</string>
     <string name="ai_error_image_conversion_failed">छवि संसाधित नहीं हो सकी।</string>
@@ -847,11 +842,6 @@
     <string name="ai_error_location_unsupported">Gemini इस नेटवर्क स्थान (देश/IP) से उपलब्ध नहीं है। VPN उपयोग कर रहे हैं तो उसे बंद करें या रेज़िडेंशियल आउटपुट पर स्विच करें। डेटासेंटर/गैर-रेज़िडेंशियल VPN IP अक्सर ब्लॉक होते हैं। या Google AI Studio प्रोजेक्ट पर बिलिंग सक्षम करें, कोई और नेटवर्क आज़माएं, या सेटिंग्स → AI प्रदाता में प्रदाता बदलें।</string>
     <string name="ai_error_model_unavailable">आपका प्रदाता यह मॉडल नहीं ढूंढ सका। यह मुफ्त टियर पर केवल-भुगतान वाला, आपके क्षेत्र में प्रतिबंधित, या endpoint गलत हो सकता है। सेटिंग्स → AI प्रदाता में डिफ़ॉल्ट Flash मॉडल पर स्विच करें, या अपने AI Studio प्रोजेक्ट पर बिलिंग सक्षम करें।</string>
     <string name="ai_error_network_format">नेटवर्क त्रुटि: %1$s</string>
-    <string name="ai_error_no_api_key">कोई API कुंजी कॉन्फ़िगर नहीं है। अपनी कुंजी सेटिंग्स → AI प्रदाता में जोड़ें।</string>
-    <string name="ai_error_on_device_low_memory">अभी ऑन-डिवाइस AI के लिए पर्याप्त खाली मेमोरी नहीं है। छोटा E2B मॉडल आज़माएं, अन्य ऐप बंद करें, या सेटिंग्स → AI प्रदाता में प्रदाता बदलें।</string>
-    <string name="ai_error_on_device_engine_init">इस डिवाइस पर मॉडल इंजन शुरू नहीं हो सका। फिर से प्रयास करें, सेटिंग्स → AI प्रदाता → मॉडल में मॉडल अनलोड करें, या क्लाउड प्रदाता पर स्विच करें।</string>
-    <string name="ai_error_on_device_model_not_downloaded">ऑन-डिवाइस मॉडल अभी डाउनलोड नहीं हुआ है। डाउनलोड करने के लिए सेटिंग्स → AI प्रदाता → मॉडल खोलें।</string>
-    <string name="ai_error_on_device_unsupported_device">यह डिवाइस ऑन-डिवाइस AI की आवश्यकताओं को पूरा नहीं करता। सेटिंग्स → AI प्रदाता में क्लाउड प्रदाता चुनें।</string>
     <string name="ai_error_provider_error">AI प्रदाता ने एक त्रुटि लौटाई।</string>
     <string name="ai_error_provider_overloaded">AI प्रदाता अभी अतिभारित है। हमने कुछ बार प्रयास किया। एक मिनट में फिर प्रयास करें, या सेटिंग्स → AI प्रदाता में प्रदाता/मॉडल बदलें।</string>
     <string name="ai_error_rate_limit">आपकी API कुंजी की अनुरोध सीमा पूरी हो गई। एक मिनट प्रतीक्षा करें या सेटिंग्स → AI प्रदाता में दूसरा प्रदाता चुनें। मुफ्त टियर पर Flash-Lite मॉडल की कोटा सबसे अधिक है।</string>
@@ -1345,7 +1335,6 @@
     <string name="settings_accuracy_title">अनुमानों की सटीकता</string>
     <string name="settings_adaptive_goals">अनुकूली लक्ष्य</string>
     <string name="settings_ai_features_master">AI सुविधाएं</string>
-    <string name="settings_ai_features_master_footer">AI प्रदाता को डेटा भेजने वाली हर चीज़ बंद करता है: कोच, फोटो/टेक्स्ट/वॉयस लॉगिंग, "क्या होगा अगर?" और AI लक्ष्य सुझाव। बारकोड, खाद्य खोज, मैन्युअल प्रविष्टि, सहेजे गए भोजन, पानी, सिंक और Health Connect सामान्य रूप से काम करते रहते हैं।</string>
     <string name="settings_ai_privacy_cloud">खाद्य फोटो, नोट, चैट और प्रोफ़ाइल डेटा इस प्रदाता को भेजे जाते हैं। केवल ऑन-डिवाइस Gemma 4 मॉडल सब कुछ आपके फोन पर रखते हैं।</string>
     <string name="settings_ai_privacy_ollama">Ollama आपके अपने कंप्यूटर पर चलता है। कुछ भी क्लाउड प्रदाता को नहीं भेजा जाता।</string>
     <string name="settings_ai_privacy_ondevice">पूरी तरह निजी: खाद्य विश्लेषण, "क्या होगा अगर?" और लक्ष्य अनुमान इस डिवाइस पर चलते हैं। कुछ भी सर्वर को नहीं भेजा जाता।</string>

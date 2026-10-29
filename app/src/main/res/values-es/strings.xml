@@ -177,7 +177,6 @@
     <string name="onboarding_pace_caption_slow">Suave y sostenible. Ideal para hábitos a largo plazo.</string>
     <string name="onboarding_pace_caption_fast">Agresivo pero alcanzable. Requiere una fuerte disciplina.</string>
     <string name="onboarding_pace_caption_recommended">El ritmo más equilibrado, motivador y sostenible.</string>
-    <string name="onboarding_pace_capped">Este ritmo no es posible para tu complexión sin bajar de tu gasto en reposo estimado. Tu objetivo será de %1$d %2$s.</string>
 
     <string name="onboarding_notifications_title">Recibe recordatorios\npara registrar comidas</string>
     <string name="onboarding_notifications_subtitle">Recibe avisos suaves a la hora de comer\npara que nunca olvides registrar.</string>
@@ -220,8 +219,6 @@
 
     <string name="onboarding_plan_title">Tu plan</string>
     <string name="onboarding_plan_daily_calories">calorías diarias</string>
-    <string name="onboarding_plan_doctor_title">Consulta a un médico</string>
-    <string name="onboarding_plan_doctor_message">La recomendación mínima es de %1$scalorías al día.</string>
     <string name="onboarding_minor_title">Solo fórmulas para adultos</string>
     <string name="onboarding_minor_message">Esta app usa fórmulas de calorías para adultos. Si eres menor de 18 años, pregunta a un profesional de la salud antes de usar estos objetivos.</string>
     <string name="onboarding_minor_continue">Entiendo</string>
@@ -870,7 +867,6 @@
     <string name="saved_to_favorites">Guardado en favoritos</string>
     <string name="action_what_if">¿Y si…?</string>
     <string name="add_food_relog_kcal">%1$d %2$s</string>
-    <string name="ai_error_coach_on_device">El Coach aún no está disponible con el proveedor en el dispositivo. Cambia a un proveedor en la nube en Ajustes → Proveedor de IA.</string>
     <string name="ai_error_coach_round_limit">El Coach no pudo responder. Intenta reformular tu pregunta.</string>
     <string name="ai_error_grounded_on_device">El bucle de herramientas de Entrada contrastada no está disponible para modelos en el dispositivo.</string>
     <string name="ai_error_grounded_requires_provider">El bucle de herramientas de Entrada contrastada requiere un proveedor de IA activo.</string>
@@ -882,16 +878,10 @@
     <string name="ai_error_location_unsupported">Gemini no está disponible desde esta ubicación de red (país/IP). Si usas una VPN, desactívala o cambia a una salida residencial. Las IP de centros de datos o VPN no residenciales suelen estar bloqueadas. También puedes activar la facturación en tu proyecto de Google AI Studio, probar otra red o cambiar de proveedor en Ajustes → Proveedor de IA.</string>
     <string name="ai_error_model_unavailable">Tu proveedor no encontró este modelo. Puede ser solo de pago en el plan gratuito, estar restringido en tu región o el endpoint puede ser incorrecto. Cambia al modelo Flash predeterminado en Ajustes → Proveedor de IA, o activa la facturación en tu proyecto de AI Studio.</string>
     <string name="ai_error_network_format">Error de red: %1$s</string>
-    <string name="ai_error_no_api_key">No hay clave API configurada. Añade tu clave en Ajustes → Proveedor de IA.</string>
-    <string name="ai_error_on_device_low_memory">No hay suficiente memoria libre para la IA en el dispositivo ahora mismo. Prueba el modelo E2B más pequeño, cierra otras apps o cambia de proveedor en Ajustes → Proveedor de IA.</string>
-    <string name="ai_error_on_device_engine_init">No se pudo iniciar el motor del modelo en este dispositivo. Inténtalo de nuevo, descarga el modelo en Ajustes → Proveedor de IA → Modelo o cambia a un proveedor en la nube.</string>
-    <string name="ai_error_on_device_model_not_downloaded">El modelo en el dispositivo aún no se ha descargado. Abre Ajustes → Proveedor de IA → Modelo para descargarlo.</string>
-    <string name="ai_error_on_device_unsupported_device">Este dispositivo no cumple los requisitos para la IA en el dispositivo. Elige un proveedor en la nube en Ajustes → Proveedor de IA.</string>
     <string name="ai_error_provider_error">El proveedor de IA devolvió un error.</string>
     <string name="ai_error_provider_overloaded">El proveedor de IA está sobrecargado ahora mismo. Lo hemos reintentado varias veces. Inténtalo de nuevo en un minuto o cambia de proveedor o modelo en Ajustes → Proveedor de IA.</string>
     <string name="ai_error_rate_limit">Se alcanzó el límite de uso de tu clave API. Espera un minuto o cambia a otro proveedor en Ajustes → Proveedor de IA. En el plan gratuito, el modelo Flash-Lite tiene la cuota más alta.</string>
     <string name="ai_error_timeout">El proveedor de IA tardó demasiado en responder. Inténtalo de nuevo o aumenta el tiempo de espera en Ajustes → IA y voz.</string>
-    <string name="ai_error_disabled">Las funciones de IA están desactivadas en Ajustes → IA y voz.</string>
     <string name="ai_error_truncated">La respuesta de la IA se cortó en el límite de longitud de respuesta. Sube la longitud máxima de respuesta en Ajustes → IA y voz, o prueba con una pregunta más corta.</string>
     <string name="ai_error_truncated_twice">La respuesta de la IA se cortó dos veces en el límite de longitud de respuesta. Sube la longitud máxima de respuesta en Ajustes → IA y voz, o prueba con una pregunta más corta.</string>
     <string name="ai_error_truncated_twice_description">El modelo alcanzó el límite de longitud de respuesta antes de terminar, y el razonamiento cuenta en ese límite. Sube la longitud máxima de respuesta en Ajustes → IA y voz, o limita el razonamiento del modelo, y vuelve a intentarlo.</string>
@@ -1625,7 +1615,6 @@
     <string name="settings_serving_unit_heuristics">Reglas de tamaño de porción</string>
     <string name="settings_serving_unit_mode">Detección del tamaño de porción</string>
     <string name="settings_ai_features_master">Funciones de IA</string>
-    <string name="settings_ai_features_master_footer">Desactiva todo lo que envía datos a un proveedor de IA: el Coach, el registro por foto/texto/voz, «¿Qué pasaría si...?» y las sugerencias de objetivos con IA. El código de barras, la búsqueda de alimentos, la entrada manual, las comidas guardadas, el agua, la sincronización y Health Connect siguen funcionando con normalidad.</string>
     <string name="settings_show_coach_tab">Mostrar la pestaña del Coach</string>
     <string name="settings_show_coach_tab_footer">Oculta la pestaña del Coach de la barra inferior. La función del Coach sigue activada; el interruptor de funciones de IA de arriba lo desactiva todo.</string>
     <string name="settings_speech_language">Idioma</string>

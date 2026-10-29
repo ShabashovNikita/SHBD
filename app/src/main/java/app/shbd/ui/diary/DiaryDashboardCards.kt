@@ -183,14 +183,31 @@ internal fun DashboardEmptyText(modifier: Modifier = Modifier) {
 
 /** Plain rounded card without a header — the block screens' summary cards (block-screen mockup). */
 @Composable
-internal fun SummaryCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    Surface(
-        shape = CardShape,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-        tonalElevation = 1.dp,
-        modifier = modifier.fillMaxWidth(),
-    ) {
+internal fun SummaryCard(
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    content: @Composable () -> Unit,
+) {
+    val inner: @Composable () -> Unit = {
         Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) { content() }
+    }
+    if (onClick != null) {
+        Surface(
+            onClick = onClick,
+            shape = CardShape,
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            tonalElevation = 1.dp,
+            modifier = modifier.fillMaxWidth(),
+            content = inner,
+        )
+    } else {
+        Surface(
+            shape = CardShape,
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            tonalElevation = 1.dp,
+            modifier = modifier.fillMaxWidth(),
+            content = inner,
+        )
     }
 }
 
@@ -357,7 +374,6 @@ internal fun NutritionCard(
     onChangeCalorieGoal: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var menuOpen by remember { mutableStateOf(false) }
     DashboardCard(
         icon = Icons.Filled.Restaurant,
         title = stringResource(R.string.diary_card_nutrition),
@@ -368,20 +384,27 @@ internal fun NutritionCard(
         onAdd = onAddFood,
     ) {
         NutritionSummaryContent(caloriesKcal, goalKcal, protein, fat, carbs) {
-            Box {
-                IconButton(onClick = { menuOpen = true }) {
-                    Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.diary_more_options))
-                }
-                DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.diary_change_calorie_goal)) },
-                        onClick = {
-                            menuOpen = false
-                            onChangeCalorieGoal()
-                        },
-                    )
-                }
-            }
+            CalorieGoalMenu(onChangeCalorieGoal)
+        }
+    }
+}
+
+/** ⋮ with "Change calorie goal" — on the Nutrition card and the Meals block summary. */
+@Composable
+internal fun CalorieGoalMenu(onChangeCalorieGoal: () -> Unit) {
+    var menuOpen by remember { mutableStateOf(false) }
+    Box {
+        IconButton(onClick = { menuOpen = true }) {
+            Icon(Icons.Filled.MoreVert, contentDescription = stringResource(R.string.diary_more_options))
+        }
+        DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.diary_change_calorie_goal)) },
+                onClick = {
+                    menuOpen = false
+                    onChangeCalorieGoal()
+                },
+            )
         }
     }
 }

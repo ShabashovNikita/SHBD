@@ -44,15 +44,12 @@ import androidx.compose.ui.unit.sp
 import app.shbd.R
 import app.shbd.models.ActivityLevel
 import app.shbd.models.DietMode
-import app.shbd.models.EnergyFormat
 import app.shbd.models.KetoCarbMode
 import app.shbd.models.LocaleFormat
 import app.shbd.models.WeightGoal
 import app.shbd.services.KetoCarbRecommendationService
 import app.shbd.ui.components.NumericWheelPicker
 import app.shbd.ui.components.SplitDecimalWheelPicker
-import app.shbd.ui.components.energyUnitLabel
-import app.shbd.ui.navigation.LocalEnergyUnit
 import app.shbd.ui.theme.AppColors
 import app.shbd.models.UnitFormat
 import app.shbd.ui.theme.AppRadii
@@ -148,7 +145,6 @@ internal fun GoalSpeedStep(
     currentKg: Double,
     targetKg: Double,
     onSelect: (Double) -> Unit,
-    paceCappedTarget: Int? = null,
 ) {
     // iOS goalSpeedStep: MAINTAIN shows a centered "Balanced pace set" card; LOSE/GAIN
     // show a big weekly-change readout, a tortoise/hare/bolt row, a 3-stop slider
@@ -269,8 +265,6 @@ internal fun GoalSpeedStep(
                     Spacer(Modifier.height(4.dp))
                     Text(
                         when {
-                            paceCappedTarget != null ->
-                                stringResource(R.string.onboarding_pace_capped, EnergyFormat.quantity(paceCappedTarget, LocalEnergyUnit.current), energyUnitLabel())
                             idx == 0 -> stringResource(R.string.onboarding_pace_caption_slow)
                             idx == 2 -> stringResource(R.string.onboarding_pace_caption_fast)
                             else -> stringResource(R.string.onboarding_pace_caption_recommended)

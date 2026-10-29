@@ -300,7 +300,6 @@
     <string name="onboarding_pace_caption_slow">Мягко и устойчиво. Отлично для долгосрочных привычек.</string>
     <string name="onboarding_pace_caption_fast">Агрессивно, но реально. Требует строгой дисциплины.</string>
     <string name="onboarding_pace_caption_recommended">Самый сбалансированный темп, мотивирующий и устойчивый.</string>
-    <string name="onboarding_pace_capped">Такой темп невозможен для вашего телосложения без снижения ниже расчетного расхода в покое. Ваша цель составит %1$d %2$s.</string>
 
     <string name="onboarding_notifications_title">Получать напоминания\nо записи блюд</string>
     <string name="onboarding_notifications_subtitle">Получай мягкие напоминания во время еды,\nчтобы не забыть отслеживать.</string>
@@ -346,8 +345,8 @@
     <string name="onboarding_plan_title">Твой план</string>
     <string name="onboarding_plan_subtitle">Выбери, сколько калорий в день есть — не больше нормы</string>
     <string name="onboarding_plan_daily_calories">калории в день</string>
-    <string name="onboarding_plan_doctor_title">Пожалуйста, проконсультируйся с врачом</string>
-    <string name="onboarding_plan_doctor_message">Минимальная рекомендация: %1$s в день.</string>
+    <string name="onboarding_plan_doctor_title">Пожалуйста, проконсультируйтесь с врачом или вашим тренером</string>
+    <string name="onboarding_plan_doctor_message">Минимум: %1$s в день</string>
     <string name="onboarding_minor_title">Только формулы для взрослых</string>
     <string name="onboarding_minor_message">Это приложение использует формулы калорий для взрослых. Если вам меньше 18 лет, спросите специалиста в области здравоохранения, прежде чем использовать эти цели.</string>
     <string name="onboarding_minor_continue">Понимаю</string>
@@ -784,7 +783,7 @@
     <string name="settings_fallback_on_device_switch_notice">Переключение между локальными моделями медленное: резервная модель загружается с нуля, до минуты или дольше. Использовать одну модель обычно быстрее.</string>
 
     <!-- Именованные ИИ-профили -->
-    <string name="settings_ai_profile">ИИ-профиль</string>
+    <string name="settings_ai_profile">Профиль</string>
     <string name="settings_profile_add">Добавить профиль</string>
     <string name="settings_profile_rename">Переименовать профиль</string>
     <string name="settings_profile_delete">Удалить профиль</string>
@@ -801,7 +800,7 @@
     <string name="settings_needs_health_connect">Требуется Health Connect</string>
     <string name="settings_energy_goals_info">Когда включено, SHBD использует измеренные сожжённые калории из Health Connect, среднее за 14 дней активной + базовой энергии, как ориентир поддержания (TDEE) при расчёте целей вместо оценки по формуле. ИИ не используется для чтения данных о расходе. Требуется Health Connect. Работает с кнопкой «Пересчитать» и с адаптивными целями.</string>
     <string name="settings_adaptive_goals_info">Примерно раз в неделю при открытии приложения SHBD автоматически заново выполняет полный расчёт целей, тот же, что и кнопка «Пересчитать», на основе твоего профиля, недавно записанной еды и тренда веса. Если включён расход энергии, измеренный расход используется как ориентир поддержания. Если ИИ недоступен, пересчёт пропускается. При выключении восстанавливаются цели, действовавшие до первого изменения этой функцией. Это не медицинская рекомендация.</string>
-    <string name="onboarding_plan_adaptive_note">Твой план автоматически корректируется каждую неделю по мере записей. Отключи «Адаптивные цели» в настройках, чтобы он оставался неизменным.</string>
+    <string name="onboarding_plan_adaptive_note">Твой план автоматически корректируется каждую неделю по мере записей. Отключи «Адаптивные цели» в разделе Профиль → Цели, чтобы он оставался неизменным.</string>
     <string name="onboarding_feature_snap">Сфотографируй. ИИ запишет.</string>
     <string name="onboarding_feature_coach">Коуч, который знает твои данные</string>
     <string name="onboarding_feature_library">Health Connect для весов и носимых устройств</string>
@@ -1197,7 +1196,7 @@
     <string name="home_active_calories_label">Активные %1$s</string>
     <string name="home_calorie_active_estimated_a11y">Активные калории оценены по твоему уровню активности</string>
     <string name="home_calorie_mode_add_active">Добавлять активный расход к бюджету</string>
-    <string name="home_calorie_mode_add_active_desc">Активные калории из Health Connect (или оценка по уровню активности) добавляются к сегодняшнему калорийному бюджету. Ешь столько, сколько сжигаешь. Установи уровень активности на обычную базу, чтобы тренировки не учитывались дважды. Подключи Health Connect в Настройки → Здоровье для измеренного расхода.</string>
+    <string name="home_calorie_mode_add_active_desc">Активные калории из Health Connect (или оценка по уровню активности) добавляются к сегодняшнему калорийному бюджету. Ешь столько, сколько сжигаешь. Установи уровень активности на обычную базу, чтобы тренировки не учитывались дважды. Подключи Health Connect в Профиль → Данные о здоровье для измеренного расхода.</string>
     <string name="home_calorie_mode_static">Фиксированная цель</string>
     <string name="home_calorie_mode_static_desc">Твоя цель по калориям остаётся фиксированной. Вручную добавленный активный расход увеличивает бюджет того дня.</string>
     <string name="home_calorie_of_goal">из %1$s %2$s</string>
@@ -1397,7 +1396,7 @@
     <string name="ai_provider_group_cloud">Облачные провайдеры</string>
     <string name="ai_provider_group_local">Локальные и self-hosted</string>
     <string name="ai_provider_group_device">На устройстве</string>
-    <string name="settings_section_ai_profile">Профиль</string>
+    <string name="settings_section_ai_profile">ИИ-профиль</string>
     <string name="settings_section_ai_connection">Подключение</string>
     <string name="settings_section_ai_advanced">Дополнительно</string>
     <string name="settings_ai_key_test">Проверить</string>
@@ -1484,31 +1483,30 @@
     <string name="action_undo">Отменить</string>
     <string name="action_save_to_favorites">Сохранить в избранное</string>
     <string name="saved_to_favorites">Сохранено в избранное</string>
-    <string name="ai_error_coach_on_device">Тренер пока недоступен с локальным провайдером. Переключись на облачного провайдера в Настройки → ИИ-провайдер.</string>
     <string name="ai_error_coach_round_limit">Тренер не смог ответить. Попробуй переформулировать вопрос.</string>
-    <string name="ai_error_disabled">ИИ-функции отключены в Настройки → ИИ и речь.</string>
+    <string name="ai_error_disabled">Функции ИИ выключены в Профиль → ИИ-провайдер.</string>
     <string name="ai_error_grounded_on_device">Режим «Grounded» недоступен для локальных моделей.</string>
     <string name="ai_error_grounded_requires_provider">Режиму «Grounded» нужен активный ИИ-провайдер.</string>
     <string name="ai_error_image_conversion_failed">Не удалось обработать изображение.</string>
     <string name="ai_error_invalid_response">Не удалось понять ответ ИИ. Попробуй ещё раз.</string>
     <string name="ai_error_invalid_url">Неверный URL API. Проверь настройки провайдера.</string>
-    <string name="ai_error_insecure_http_blocked">Незащищённый HTTP заблокирован. Включи «Разрешить незащищённый HTTP» в Настройки → ИИ и речь или используй URL https://.</string>
-    <string name="ai_error_key_rejected">API-ключ отклонён. Открой Настройки → ИИ-провайдер и вставь действующий ключ заново.</string>
-    <string name="ai_error_location_unsupported">Gemini недоступен из этого региона (страна/IP). Если используешь VPN, отключи его или выбери выход из жилого диапазона. IP дата-центров часто блокируются. Либо включи биллинг в проекте Google AI Studio, попробуй другую сеть или смени провайдера в Настройки → ИИ-провайдер.</string>
-    <string name="ai_error_model_unavailable">Провайдер не нашёл эту модель. Она может быть платной на бесплатном тарифе, недоступна в твоём регионе или указан неверный endpoint. Переключись на стандартную модель Flash в Настройки → ИИ-провайдер или включи биллинг в проекте AI Studio.</string>
+    <string name="ai_error_insecure_http_blocked">Незащищённый HTTP заблокирован. Включи «Разрешить незащищённый HTTP» в Профиль → ИИ-провайдер или используй URL https://.</string>
+    <string name="ai_error_key_rejected">API-ключ отклонён. Открой Профиль → ИИ-провайдер и вставь действующий ключ заново.</string>
+    <string name="ai_error_location_unsupported">Gemini недоступен из этого региона (страна/IP). Если используешь VPN, отключи его или выбери выход из жилого диапазона. IP дата-центров часто блокируются. Либо включи биллинг в проекте Google AI Studio, попробуй другую сеть или смени провайдера в Профиль → ИИ-провайдер.</string>
+    <string name="ai_error_model_unavailable">Провайдер не нашёл эту модель. Она может быть платной на бесплатном тарифе, недоступна в твоём регионе или указан неверный endpoint. Переключись на стандартную модель Flash в Профиль → ИИ-провайдер или включи биллинг в проекте AI Studio.</string>
     <string name="ai_error_network_format">Ошибка сети: %1$s</string>
-    <string name="ai_error_no_api_key">API-ключ не настроен. Добавь ключ в Настройки → ИИ-провайдер.</string>
-    <string name="ai_error_on_device_low_memory">Сейчас недостаточно памяти для ИИ на устройстве. Попробуй модель E2B, закрой другие приложения или смени провайдера в Настройки → ИИ-провайдер.</string>
-    <string name="ai_error_on_device_engine_init">Не удалось запустить движок модели на этом устройстве. Попробуй ещё раз, выгрузи модель в Настройках → ИИ-провайдер → Модель или переключись на облачного провайдера.</string>
-    <string name="ai_error_on_device_model_not_downloaded">Локальная модель ещё не загружена. Открой Настройки → ИИ-провайдер → Модель, чтобы загрузить её.</string>
-    <string name="ai_error_on_device_unsupported_device">Это устройство не соответствует требованиям для локального ИИ. Выбери облачного провайдера в Настройки → ИИ-провайдер.</string>
+    <string name="ai_error_no_api_key">Нет ключа API. Добавьте его в Профиль → ИИ-провайдер или установите локальную модель во вкладке «Тренер».</string>
+    <string name="ai_error_on_device_low_memory">Не хватает памяти — закройте другие приложения и попробуйте снова.</string>
+    <string name="ai_error_on_device_engine_init">Не удалось запустить модель ИИ на этом устройстве. Попробуйте ещё раз; если не помогает — удалите модель в Профиль → ИИ-провайдер и скачайте её заново во вкладке «Тренер».</string>
+    <string name="ai_error_on_device_model_not_downloaded">Нужна модель ИИ. Установите локальную модель или подключите удалённую во вкладке «Тренер».</string>
+    <string name="ai_error_on_device_unsupported_device">Устройство не поддерживает встроенный ИИ (нужно 4 ГБ памяти и больше).</string>
     <string name="ai_error_provider_error">ИИ-провайдер вернул ошибку.</string>
-    <string name="ai_error_provider_overloaded">ИИ-провайдер сейчас перегружен. Мы повторили несколько раз. Попробуй через минуту или смени провайдера/модель в Настройки → ИИ-провайдер.</string>
-    <string name="ai_error_rate_limit">Достигнут лимит запросов по твоему API-ключу. Подожди минуту или смени провайдера в Настройки → ИИ-провайдер. На бесплатном тарифе самая большая квота у модели Flash-Lite.</string>
-    <string name="ai_error_timeout">ИИ-провайдер отвечал слишком долго. Попробуй ещё раз или увеличь таймаут в Настройки → ИИ и речь.</string>
-    <string name="ai_error_truncated">Ответ ИИ обрезан на лимите длины ответа. Увеличь «Макс. токенов ответа» в Настройки → ИИ и речь или попробуй более короткий вопрос.</string>
-    <string name="ai_error_truncated_twice">Ответ ИИ дважды обрезан на лимите длины ответа. Увеличь «Макс. токенов ответа» в Настройки → ИИ и речь или попробуй более короткий вопрос.</string>
-    <string name="ai_error_truncated_twice_description">Модель достигла лимита длины ответа, не закончив его, и размышления тоже входят в этот лимит. Увеличь «Макс. токенов ответа» в Настройки → ИИ и речь или ограничь размышления модели, затем попробуй ещё раз.</string>
+    <string name="ai_error_provider_overloaded">ИИ-провайдер сейчас перегружен. Мы повторили несколько раз. Попробуй через минуту или смени провайдера/модель в Профиль → ИИ-провайдер.</string>
+    <string name="ai_error_rate_limit">Достигнут лимит запросов по твоему API-ключу. Подожди минуту или смени провайдера в Профиль → ИИ-провайдер. На бесплатном тарифе самая большая квота у модели Flash-Lite.</string>
+    <string name="ai_error_timeout">ИИ-провайдер отвечал слишком долго. Попробуй ещё раз или увеличь таймаут в Профиль → ИИ-провайдер.</string>
+    <string name="ai_error_truncated">Ответ ИИ обрезан на лимите длины ответа. Увеличь «Макс. токенов ответа» в Профиль → ИИ-провайдер или попробуй более короткий вопрос.</string>
+    <string name="ai_error_truncated_twice">Ответ ИИ дважды обрезан на лимите длины ответа. Увеличь «Макс. токенов ответа» в Профиль → ИИ-провайдер или попробуй более короткий вопрос.</string>
+    <string name="ai_error_truncated_twice_description">Модель достигла лимита длины ответа, не закончив его, и размышления тоже входят в этот лимит. Увеличь «Макс. токенов ответа» в Профиль → ИИ-провайдер или ограничь размышления модели, затем попробуй ещё раз.</string>
     <string name="ai_model_tier_paid">Только платная модель (бесплатный тариф больше не включает Pro)</string>
     <string name="ai_model_tier_varies">Доступность на бесплатном тарифе зависит от аккаунта и региона</string>
     <string name="ai_provider_on_device">На устройстве (приватно)</string>
@@ -1645,7 +1643,7 @@
     <string name="on_device_model_leftover_footer">На устройстве осталось %1$s от прежней локальной загрузки. Откройте, чтобы продолжить или удалить.</string>
     <string name="on_device_model_download">Загрузить</string>
     <string name="on_device_model_downloading">Загрузка… %1$d%%</string>
-    <string name="on_device_model_e4b_notice">Больше и медленнее, чем E2B, но может давать более подробные описания еды. Для стабильности анализ фото работает на CPU/GPU одновременно, поэтому может быть заметно медленнее текстового режима. Выбери E2B в Настройки → Модель, если хочешь более быстрые ответы.</string>
+    <string name="on_device_model_e4b_notice">Больше и медленнее, чем E2B, но может давать более подробные описания еды. Для стабильности анализ фото работает на CPU/GPU одновременно, поэтому может быть заметно медленнее текстового режима. Выбери E2B в Профиль → ИИ-провайдер → Модель, если хочешь более быстрые ответы.</string>
     <string name="on_device_model_ready">Загружена и готова.</string>
     <string name="on_device_model_retry">Повторить загрузку</string>
     <string name="on_device_model_sheet_title">Локальная модель</string>
@@ -1716,7 +1714,7 @@
 
     <string name="saved_meals_tab_recipes">Рецепты</string>
     <string name="settings_ai_features_master">ИИ-функции</string>
-    <string name="settings_ai_features_master_footer">Отключает всё, что отправляет данные ИИ-провайдеру: тренера, запись по фото/тексту/голосу, «А что если?» и ИИ-подсказки целей. Штрихкод, поиск еды, ручная запись, сохранённые приёмы пищи, вода, синхронизация и Health Connect продолжают работать.</string>
+    <string name="settings_ai_features_master_footer">Выключает тренера, запись по фото/тексту/голосу, «А что если?» и пересчёт целей ИИ. Штрихкод, поиск еды, ручная запись, сохранённые приёмы пищи, вода, синхронизация и Health Connect продолжают работать.</string>
     <string name="settings_ai_privacy_cloud">Фото еды, заметки, чат и данные профиля отправляются этому провайдеру. Только локальные модели Gemma 4 оставляют всё на телефоне.</string>
     <string name="settings_ai_privacy_ollama">Ollama работает на твоём компьютере. Ничего не отправляется в облако.</string>
     <string name="settings_ai_privacy_ondevice">Полностью приватно: анализ еды, «А что если?» и оценка целей работают на устройстве. Ничего не отправляется на сервер.</string>
@@ -2373,4 +2371,27 @@
     <string name="diary_deficit_chart_title">Дефицит калорий</string>
     <string name="diary_deficit_total">Дефицит за период: %1$s %2$s ≈ %3$s</string>
     <string name="diary_surplus_total">Профицит за период: %1$s %2$s ≈ %3$s</string>
+    <string name="model_required_title">Нужна модель ИИ</string>
+    <string name="model_required_food">Для разбора еды нужна модель ИИ. Установите локальную модель или подключите удалённую во вкладке «Тренер».</string>
+    <string name="model_required_goals">Для пересчёта целей нужна модель ИИ. Установите локальную модель или подключите удалённую во вкладке «Тренер».</string>
+    <string name="model_required_open_coach">Открыть Тренер</string>
+    <string name="coach_model_card_text">Чтобы я мог отвечать, нужна модель ИИ. Выберите вариант:</string>
+    <string name="coach_model_remote">Подключить удалённую модель</string>
+    <string name="coach_model_remote_hint">Облачный провайдер (Gemini, OpenAI, Claude, OpenRouter…) с вашим ключом API.</string>
+    <string name="coach_model_install_local">Установить локальную модель (%1$s)</string>
+    <string name="coach_model_use_local">Использовать локальную модель</string>
+    <string name="coach_model_local_hint">Работает на телефоне без интернета. Скачивается один раз по Wi‑Fi или мобильной сети.</string>
+    <string name="coach_model_local_unsupported">Устройство не поддерживает локальную модель (нужно 4 ГБ памяти и больше).</string>
+    <string name="coach_model_waiting_network">Ждём подключения к интернету — загрузка начнётся сама.</string>
+    <string name="coach_model_downloading">Скачиваю модель… %1$d %%</string>
+    <string name="coach_model_verifying">Проверка файла…</string>
+    <string name="coach_model_failed">Ошибка загрузки: %1$s</string>
+    <string name="coach_remote_setup_title">Подключить удалённую модель</string>
+    <string name="coach_remote_setup_steps">1. Получите ключ API на сайте провайдера, например Google AI Studio для Gemini.\n2. Откройте Профиль → ИИ-провайдер.\n3. Нажмите «Провайдер» и выберите сервис, затем выберите модель.\n4. Нажмите «Ключ API» и вставьте ключ.\n5. Вернитесь в Тренер — он сам ответит на ваш последний вопрос.</string>
+    <string name="ai_profile_default_local">Локальная модель</string>
+    <string name="ai_profile_default_remote">Удалённая модель</string>
+    <string name="calorie_plan_subtitle">Калории по вашему текущему весу. Сдвиньте ползунок и нажмите «Сохранить».</string>
+    <string name="calorie_plan_goal_weight_title">Желаемый вес</string>
+    <string name="calorie_plan_goal_weight_note">Ваш текущий вес: %1$s. Цель по весу: %2$s.</string>
+    <string name="coach_remote_setup_open">Открыть ИИ-провайдер</string>
 </resources>

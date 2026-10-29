@@ -56,6 +56,16 @@ internal fun SettingsGoalsSection(
     onOpenSheet: (SettingsSheet) -> Unit,
     onShowAdaptiveGoalsInfo: () -> Unit,
 ) {
+    ui.modelRequired?.let { kind ->
+        app.shbd.ui.components.ModelRequiredDialog(
+            kind = kind,
+            onOpenCoach = {
+                vm.dismissModelRequired()
+                app.shbd.ui.components.openCoachTab(vm.container)
+            },
+            onDismiss = { vm.dismissModelRequired() },
+        )
+    }
     SectionCard(title = stringResource(R.string.settings_section_goals)) {
                 profile?.let { p ->
                     SettingRow(stringResource(R.string.settings_weight_goal), stringResource(p.goal.displayNameRes), icon = Icons.Outlined.Equalizer, inlineMenu = true) { onOpenSheet(SettingsSheet.GOAL) }

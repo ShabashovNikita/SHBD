@@ -15,9 +15,9 @@ sealed class AiError(
     @StringRes val messageRes: Int = 0,
     val formatArgs: Array<out Any> = emptyArray(),
 ) : Exception(message) {
-    object NoApiKey : AiError("No API key configured. Add your key in Settings → AI Provider.", messageRes = R.string.ai_error_no_api_key)
+    object NoApiKey : AiError("No API key. Add it in Profile → AI Provider, or install the local model in the Coach tab.", messageRes = R.string.ai_error_no_api_key)
     /** Codeberg #20 phase 2: the master AI-features switch is off; no data may leave. */
-    object Disabled : AiError("AI features are turned off in Settings → AI & Speech.", messageRes = R.string.ai_error_disabled)
+    object Disabled : AiError("AI features are turned off in Profile → AI Provider.", messageRes = R.string.ai_error_disabled)
     object ImageConversionFailed : AiError("Failed to process the image.", messageRes = R.string.ai_error_image_conversion_failed)
     class Network(cause: Throwable) : AiError(
         connectionFailureMessage(cause),
@@ -31,7 +31,7 @@ sealed class AiError(
     /** Reply arrived but was cut short at the provider (finishReason MAX_TOKENS and kin). */
     object ResponseTruncated : AiError("The AI response was truncated. Try a shorter question or a different model.", messageRes = R.string.ai_error_truncated)
     object Timeout : AiError(
-        "The AI provider took too long to answer. Try again, or raise the timeout in Settings → AI & Speech.",
+        "The AI provider took too long to answer. Try again, or raise the timeout in Profile → AI Provider.",
         messageRes = R.string.ai_error_timeout,
     )
     /**
@@ -48,15 +48,15 @@ sealed class AiError(
     class InvalidUrl(val url: String) : AiError("Invalid API URL. Check your provider settings.", messageRes = R.string.ai_error_invalid_url)
     /** Issue #8 follow-up: user-entered http:// URL with the "Allow insecure HTTP" toggle off. */
     object InsecureHttpBlocked : AiError(
-        "Insecure HTTP is blocked. Turn on \"Allow insecure HTTP\" in Settings → AI & Speech, or use an https:// URL.",
+        "Insecure HTTP is blocked. Turn on \"Allow insecure HTTP\" in Profile → AI Provider, or use an https:// URL.",
         messageRes = R.string.ai_error_insecure_http_blocked,
     )
-    object OnDeviceModelNotDownloaded : AiError("On-device model not downloaded yet. Open Settings → AI Provider → Model to download it.", messageRes = R.string.ai_error_on_device_model_not_downloaded)
-    object OnDeviceUnsupportedDevice : AiError("This device doesn't meet the requirements for on-device AI. Choose a cloud provider in Settings → AI Provider.", messageRes = R.string.ai_error_on_device_unsupported_device)
-    object OnDeviceLowMemory : AiError("Not enough free memory for on-device photo analysis right now. Try the smaller E2B model, close other apps, or switch providers in Settings → AI Provider.", messageRes = R.string.ai_error_on_device_low_memory)
+    object OnDeviceModelNotDownloaded : AiError("This needs an AI model. Install the local model or connect a remote one in the Coach tab.", messageRes = R.string.ai_error_on_device_model_not_downloaded)
+    object OnDeviceUnsupportedDevice : AiError("This device doesn't support the built-in AI (it needs 4 GB of memory or more).", messageRes = R.string.ai_error_on_device_unsupported_device)
+    object OnDeviceLowMemory : AiError("Not enough free memory — close other apps and try again.", messageRes = R.string.ai_error_on_device_low_memory)
     /** On-device engine failed to initialize (OpenCL/GPU or CPU) with no fallback left. */
     class OnDeviceEngineInit(cause: Throwable) : AiError(
-        "The on-device model engine failed to start on this device. Try again, unload the model in Settings → AI Provider → Model, or switch to a cloud provider.",
+        "The AI model failed to start on this device. Try again; if it keeps failing, delete the model in Profile → AI Provider and download it again in the Coach tab.",
         messageRes = R.string.ai_error_on_device_engine_init,
     )
 }
@@ -89,11 +89,11 @@ internal fun errorDetail(e: Throwable): String? {
 }
 
 internal fun friendlyMessage(status: Int, raw: String): String {
-    val keyRejected = "Your API key was rejected. Open Settings → AI Provider and re-paste a valid key."
+    val keyRejected = "Your API key was rejected. Open Profile → AI Provider and re-paste a valid key."
     val locationUnsupported =
-        "Gemini isn't available from this network location (country/IP). If you use a VPN, turn it off or switch to a residential exit. Datacenter/non-residential VPN IPs are often blocked. Or enable billing on the Google AI Studio project, try another network, or switch provider in Settings → AI Provider."
+        "Gemini isn't available from this network location (country/IP). If you use a VPN, turn it off or switch to a residential exit. Datacenter/non-residential VPN IPs are often blocked. Or enable billing on the Google AI Studio project, try another network, or switch provider in Profile → AI Provider."
     val modelUnavailable =
-        "Your provider couldn't find this model. It may be paid-only on the free tier, restricted in your region, or the endpoint may be wrong. Switch to the default Flash model in Settings → AI Provider, or enable billing on your AI Studio project."
+        "Your provider couldn't find this model. It may be paid-only on the free tier, restricted in your region, or the endpoint may be wrong. Switch to the default Flash model in Profile → AI Provider, or enable billing on your AI Studio project."
     val hasKeyInvalidMarker =
         raw.contains("api key not valid", ignoreCase = true) ||
             raw.contains("api_key_invalid", ignoreCase = true) ||
@@ -108,8 +108,8 @@ internal fun friendlyMessage(status: Int, raw: String): String {
             raw.contains("not supported for", ignoreCase = true)
 
     return when (status) {
-        503, 529 -> "The AI provider is overloaded right now. We retried a few times. Please try again in a minute, or switch to a different provider/model in Settings → AI Provider."
-        429 -> "Rate limit hit on your API key. Wait a minute, or switch to another provider in Settings → AI Provider. On the free tier, the Flash-Lite model has the highest quota."
+        503, 529 -> "The AI provider is overloaded right now. We retried a few times. Please try again in a minute, or switch to a different provider/model in Profile → AI Provider."
+        429 -> "Rate limit hit on your API key. Wait a minute, or switch to another provider in Profile → AI Provider. On the free tier, the Flash-Lite model has the highest quota."
         400 -> when {
             hasKeyInvalidMarker -> keyRejected
             hasLocationUnsupportedMarker -> locationUnsupported
@@ -177,7 +177,7 @@ internal fun connectionFailureHint(cause: Throwable): String? {
         when {
             message.contains("CLEARTEXT communication", ignoreCase = true) ||
                 message.contains("not permitted by network security policy", ignoreCase = true) ->
-                return "Cleartext HTTP is blocked. Turn on \"Allow insecure HTTP\" in Settings → AI & Speech for plain-http endpoints, or use https://. A certificate you install on this phone is trusted for custom and Ollama endpoints."
+                return "Cleartext HTTP is blocked. Turn on \"Allow insecure HTTP\" in Profile → AI Provider for plain-http endpoints, or use https://. A certificate you install on this phone is trusted for custom and Ollama endpoints."
 
             t is java.security.cert.CertPathValidatorException ||
                 message.contains("Trust anchor", ignoreCase = true) ->

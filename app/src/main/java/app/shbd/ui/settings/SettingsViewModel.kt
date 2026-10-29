@@ -62,7 +62,9 @@ import app.shbd.data.GoalRecalcTierOverride
 import app.shbd.data.OpenRouterReasoningEffort
 import app.shbd.data.WeatherRepository
 import app.shbd.data.readSettingsHydration
+import app.shbd.services.ondevice.AiAvailability
 import app.shbd.services.ondevice.ModelCatalog
+import app.shbd.services.ondevice.ModelRequiredKind
 import app.shbd.services.ondevice.OnDeviceCapability
 import app.shbd.models.WeightGoal
 import app.shbd.services.KetoCarbRecommendationService
@@ -187,6 +189,8 @@ data class SettingsUiState(
     val applyingHealthEnergyGoals: Boolean = false,
     val applyingAdaptiveGoals: Boolean = false,
     val recalculatingGoals: Boolean = false,
+    /** "Recalculate goals" tapped without the model; shows ModelRequiredDialog. */
+    val modelRequired: ModelRequiredKind? = null,
     val healthEnergyGoalAlertTitle: String? = null,
     val healthEnergyGoalAlertMessage: String? = null,
     val adaptiveGoalAlertTitle: String? = null,
@@ -1323,17 +1327,13 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
             // schedule the model download (the worker skips it as a backstop).
             if (container.prefs.aiFeaturesEnabled.first() == false) return@launch
             val entry = ModelCatalog.forModelId(_ui.value.activeModel)
-            val overWifiOnly = container.prefs.onDeviceDownloadOverWifiOnly.first()
-            container.onDeviceModelDownloadManager.startDownload(entry, overWifiOnly)
+            // Any connection (Wi-Fi or mobile data): no "Wi-Fi only" option.
+            container.onDeviceModelDownloadManager.startDownload(entry, overWifiOnly = false)
         }
     }
 
     fun cancelOnDeviceModelDownload() {
         container.onDeviceModelDownloadManager.cancelDownload()
-    }
-
-    fun setOnDeviceDownloadOverWifiOnly(v: Boolean) {
-        viewModelScope.launch { container.prefs.setOnDeviceDownloadOverWifiOnly(v) }
     }
 
     fun setOnDeviceHeadroomPercent(v: Int) {
@@ -2323,9 +2323,18 @@ class SettingsViewModel(val container: AppContainer) : ViewModel() {
         }
     }
 
+    fun dismissModelRequired() {
+        _ui.value = _ui.value.copy(modelRequired = null)
+    }
+
     fun recalculateGoals() {
         viewModelScope.launch {
             if (_ui.value.recalculatingGoals) return@launch
+            // No model yet: ask for the download in Coach; goals stay untouched.
+            if (container.aiAvailability.first() == AiAvailability.MODEL_MISSING) {
+                _ui.value = _ui.value.copy(modelRequired = ModelRequiredKind.GOALS)
+                return@launch
+            }
             _ui.value = _ui.value.copy(recalculatingGoals = true)
             try {
                 // Everything from the DataStore reads through the model call and

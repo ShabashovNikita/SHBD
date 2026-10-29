@@ -145,7 +145,6 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                     onChange = vm::setGoalWeight
                 )
                 OnboardingStep.GOAL_SPEED -> {
-                    val draft = ui.buildProfile()
                     GoalSpeedStep(
                         weeklyKg = ui.weeklyChangeKg,
                         goal = ui.goal,
@@ -153,7 +152,6 @@ fun OnboardingScreen(container: AppContainer, onComplete: () -> Unit) {
                         currentKg = ui.weightKg,
                         targetKg = ui.goalWeightKg,
                         onSelect = vm::setWeeklyChange,
-                        paceCappedTarget = draft.takeIf { it.rawDailyCalories < it.dailyCalories }?.dailyCalories,
                     )
                 }
                 OnboardingStep.HEALTH_CONNECT -> HealthConnectStep(

@@ -196,7 +196,7 @@
     <string name="ai_provider_group_local">Local &amp; self-hosted</string>
     <string name="ai_provider_group_device">On-device</string>
 
-    <string name="settings_section_ai_profile">Profile</string>
+    <string name="settings_section_ai_profile">AI profile</string>
     <string name="settings_section_ai_connection">Connection</string>
     <string name="settings_section_ai_advanced">Advanced</string>
     <string name="settings_ai_key_test">Test</string>
@@ -441,9 +441,8 @@
     <string name="onboarding_minor_title">Adult formulas only</string>
     <string name="onboarding_minor_message">This app uses adult calorie formulas. If you are under 18, ask a clinician before using these targets.</string>
     <string name="onboarding_minor_continue">I understand</string>
-    <string name="onboarding_plan_doctor_title">Please consult with a doctor</string>
-    <string name="onboarding_plan_doctor_message">This is below your estimated resting calories or %1$s a day.</string>
-    <string name="onboarding_pace_capped">This pace isn\'t possible at your size without going below your estimated resting calories. Your target will be %1$d %2$s.</string>
+    <string name="onboarding_plan_doctor_title">Please consult your doctor or your coach</string>
+    <string name="onboarding_plan_doctor_message">Minimum: %1$s a day</string>
 
     <string name="onboarding_disclaimers_title">Before you start</string>
     <string name="onboarding_disclaimers_subtitle">Please read these important notices</string>
@@ -1841,7 +1840,7 @@
     <string name="settings_gemini_google_search">Google Search grounding</string>
     <string name="settings_gemini_google_search_footer">When enabled, Gemini may search the web when it helps answer a prompt. Search queries are sent to Google. Google bills your Gemini API project for this. On Gemini 3 models, each search query executed counts toward usage; on Gemini 2.5 and older, billing is per prompt that uses search.</string>
     <string name="settings_ai_features_master">AI features</string>
-    <string name="settings_ai_features_master_footer">Turns off everything that sends data to an AI provider: the coach, photo/text/voice logging, “What if?”, and AI goal suggestions. Barcode, food search, manual entry, saved meals, water, sync, and Health Connect keep working normally.</string>
+    <string name="settings_ai_features_master_footer">Turns off the coach, photo/text/voice logging, “What if?”, and AI goal recalculation. Barcode, food search, manual entry, saved meals, water, sync, and Health Connect keep working normally.</string>
     <string name="settings_show_coach_tab">Show the coach tab</string>
     <string name="settings_show_coach_tab_footer">Hides the coach tab from the bottom bar. The coach feature itself stays enabled; the AI features switch above turns everything off.</string>
     <string name="settings_meal_constituents">Meal ingredient breakdown</string>
@@ -1850,7 +1849,7 @@
     <string name="on_device_model_privacy_notice">Runs entirely on this device. Nothing you type or photograph is sent to a server. Downloading fetches the model file directly from Hugging Face (%1$s), a third-party host not otherwise used by this app.</string>
     <string name="on_device_model_device_notice">Tested on Pixel 9a (GrapheneOS). Other devices, especially lower-tier or non-Tensor hardware, haven\'t been validated yet and may be slower or unsupported; a cloud provider is a safer default there.</string>
     <string name="on_device_model_accuracy_notice">These models are not as accurate as cloud-hosted AI. Expect wrong calories, missed items, or weak photo reads, especially with the smaller E2B model. Cloud providers remain the recommended default for reliable logging.</string>
-    <string name="on_device_model_e4b_notice">Larger and slower than E2B, but may give better food descriptions. Photo analysis runs a CPU/GPU split for stability, so it may be noticeably slower than text-only. Pick E2B in Settings → Model if you prefer faster responses.</string>
+    <string name="on_device_model_e4b_notice">Larger and slower than E2B, but may give better food descriptions. Photo analysis runs a CPU/GPU split for stability, so it may be noticeably slower than text-only. Pick E2B in Profile → AI Provider → Model if you prefer faster responses.</string>
     <string name="on_device_model_storage_short">Not enough free storage. Need at least %1$s free (have %2$s).</string>
     <string name="on_device_model_wifi_only">Download over Wi-Fi only</string>
     <string name="on_device_model_download">Download</string>
@@ -1888,7 +1887,7 @@
     <string name="settings_fallback_on_device_switch_notice">Switching on-device models is slow: the fallback model starts from a cold load, up to a minute or more. Keeping one model is usually faster.</string>
 
     <!-- Named AI profiles -->
-    <string name="settings_ai_profile">AI profile</string>
+    <string name="settings_ai_profile">Profile</string>
     <string name="settings_profile_add">Add profile</string>
     <string name="settings_profile_rename">Rename profile</string>
     <string name="settings_profile_delete">Delete profile</string>
@@ -2108,28 +2107,27 @@
     <string name="sync_success_applied">Sync document applied</string>
 
     <!-- AI provider errors (resolved at the UI layer) -->
-    <string name="ai_error_no_api_key">No API key configured. Add your key in Settings → AI Provider.</string>
+    <string name="ai_error_no_api_key">No API key. Add it in Profile → AI Provider, or install the local model in the Coach tab.</string>
     <string name="ai_error_image_conversion_failed">Failed to process the image.</string>
     <string name="ai_error_network_format">Network error: %1$s</string>
     <string name="ai_error_invalid_response">Could not understand the AI response. Please try again.</string>
-    <string name="ai_error_timeout">The AI provider took too long to answer. Try again, or raise the timeout in Settings → AI &amp; Speech.</string>
-    <string name="ai_error_disabled">AI features are turned off in Settings → AI &amp; Speech.</string>
+    <string name="ai_error_timeout">The AI provider took too long to answer. Try again, or raise the timeout in Profile → AI Provider.</string>
+    <string name="ai_error_disabled">AI features are turned off in Profile → AI Provider.</string>
     <string name="ai_error_invalid_url">Invalid API URL. Check your provider settings.</string>
-    <string name="ai_error_insecure_http_blocked">Insecure HTTP is blocked. Turn on “Allow insecure HTTP” in Settings → AI &amp; Speech, or use an https:// URL.</string>
-    <string name="ai_error_on_device_model_not_downloaded">On-device model not downloaded yet. Open Settings → AI Provider → Model to download it.</string>
-    <string name="ai_error_on_device_unsupported_device">This device doesn\'t meet the requirements for on-device AI. Choose a cloud provider in Settings → AI Provider.</string>
-    <string name="ai_error_on_device_low_memory">Not enough free memory for on-device AI right now. Try the smaller E2B model, close other apps, or switch providers in Settings → AI Provider.</string>
-    <string name="ai_error_on_device_engine_init">The on-device model engine failed to start on this device. Try again, unload the model in Settings → AI Provider → Model, or switch to a cloud provider.</string>
-    <string name="ai_error_key_rejected">Your API key was rejected. Open Settings → AI Provider and re-paste a valid key.</string>
-    <string name="ai_error_location_unsupported">Gemini isn\'t available from this network location (country/IP). If you use a VPN, turn it off or switch to a residential exit. Datacenter/non-residential VPN IPs are often blocked. Or enable billing on the Google AI Studio project, try another network, or switch provider in Settings → AI Provider.</string>
-    <string name="ai_error_provider_overloaded">The AI provider is overloaded right now. We retried a few times. Please try again in a minute, or switch to a different provider/model in Settings → AI Provider.</string>
-    <string name="ai_error_rate_limit">Rate limit hit on your API key. Wait a minute, or switch to another provider in Settings → AI Provider. On the free tier, the Flash-Lite model has the highest quota.</string>
-    <string name="ai_error_model_unavailable">Your provider couldn\'t find this model. It may be paid-only on the free tier, restricted in your region, or the endpoint may be wrong. Switch to the default Flash model in Settings → AI Provider, or enable billing on your AI Studio project.</string>
-    <string name="ai_error_coach_on_device">Coach isn\'t available with the on-device provider yet. Switch to a cloud provider in Settings → AI Provider.</string>
+    <string name="ai_error_insecure_http_blocked">Insecure HTTP is blocked. Turn on “Allow insecure HTTP” in Profile → AI Provider, or use an https:// URL.</string>
+    <string name="ai_error_on_device_model_not_downloaded">This needs an AI model. Install the local model or connect a remote one in the Coach tab.</string>
+    <string name="ai_error_on_device_unsupported_device">This device doesn’t support the built-in AI (it needs 4 GB of memory or more).</string>
+    <string name="ai_error_on_device_low_memory">Not enough free memory — close other apps and try again.</string>
+    <string name="ai_error_on_device_engine_init">The AI model failed to start on this device. Try again; if it keeps failing, delete the model in Profile → AI Provider and download it again in the Coach tab.</string>
+    <string name="ai_error_key_rejected">Your API key was rejected. Open Profile → AI Provider and re-paste a valid key.</string>
+    <string name="ai_error_location_unsupported">Gemini isn\'t available from this network location (country/IP). If you use a VPN, turn it off or switch to a residential exit. Datacenter/non-residential VPN IPs are often blocked. Or enable billing on the Google AI Studio project, try another network, or switch provider in Profile → AI Provider.</string>
+    <string name="ai_error_provider_overloaded">The AI provider is overloaded right now. We retried a few times. Please try again in a minute, or switch to a different provider/model in Profile → AI Provider.</string>
+    <string name="ai_error_rate_limit">Rate limit hit on your API key. Wait a minute, or switch to another provider in Profile → AI Provider. On the free tier, the Flash-Lite model has the highest quota.</string>
+    <string name="ai_error_model_unavailable">Your provider couldn\'t find this model. It may be paid-only on the free tier, restricted in your region, or the endpoint may be wrong. Switch to the default Flash model in Profile → AI Provider, or enable billing on your AI Studio project.</string>
     <string name="ai_error_coach_round_limit">Coach could not answer. Try rephrasing your question.</string>
-    <string name="ai_error_truncated_twice">The AI response was cut off at the response length limit twice. Raise the max response length in Settings → AI &amp; Speech, or try a shorter question.</string>
-    <string name="ai_error_truncated_twice_description">The model hit the response length limit before finishing, and thinking counts toward it. Raise the max response length in Settings → AI &amp; Speech, or limit the model\'s thinking, then try again.</string>
-    <string name="ai_error_truncated">The AI response was cut off at the response length limit. Raise the max response length in Settings → AI &amp; Speech, or try a shorter question.</string>
+    <string name="ai_error_truncated_twice">The AI response was cut off at the response length limit twice. Raise the max response length in Profile → AI Provider, or try a shorter question.</string>
+    <string name="ai_error_truncated_twice_description">The model hit the response length limit before finishing, and thinking counts toward it. Raise the max response length in Profile → AI Provider, or limit the model\'s thinking, then try again.</string>
+    <string name="ai_error_truncated">The AI response was cut off at the response length limit. Raise the max response length in Profile → AI Provider, or try a shorter question.</string>
     <string name="ai_error_provider_error">The AI provider returned an error.</string>
     <string name="ai_error_grounded_requires_provider">Grounded tool loop requires a live AI provider.</string>
     <string name="ai_error_grounded_on_device">Grounded tool loop is not available for on-device models.</string>
@@ -2139,7 +2137,7 @@
     <string name="onboarding_privacy_note_cloud">With a cloud provider, food photos, meal notes, chat, and profile data are sent to that provider. Only the on-device Gemma 4 models keep everything on your phone.</string>
     <string name="onboarding_privacy_note_ondevice">Gemma 4 runs entirely on this device. Nothing you type or photograph is sent to a server.</string>
     <string name="onboarding_privacy_note_ollama">Ollama runs on your own computer. Nothing is sent to a cloud provider.</string>
-    <string name="onboarding_plan_adaptive_note">Your plan auto-adjusts weekly as you log. Turn off Adaptive Goals in Settings to keep it fixed.</string>
+    <string name="onboarding_plan_adaptive_note">Your plan auto-adjusts weekly as you log. Turn off Adaptive Goals in Profile → Goals to keep it fixed.</string>
     <string name="onboarding_feature_snap">Snap a photo. AI logs it.</string>
     <string name="onboarding_feature_coach">Coach that knows your data</string>
     <string name="onboarding_feature_library">Health Connect for scales and wearables</string>
@@ -2334,7 +2332,7 @@
     <string name="home_calorie_mode_static">Static goal</string>
     <string name="home_calorie_mode_add_active">Add active burn to budget</string>
     <string name="home_calorie_mode_static_desc">Your calorie goal stays fixed. A manually logged active burn still raises that day’s budget.</string>
-    <string name="home_calorie_mode_add_active_desc">Active calories from Health Connect (or your activity-level estimate) are added to today’s calorie budget. Eat back what you burn. Set Activity Level to everyday baseline so workouts are not double-counted. Turn on Health Connect under Settings → Health for measured burn.</string>
+    <string name="home_calorie_mode_add_active_desc">Active calories from Health Connect (or your activity-level estimate) are added to today’s calorie budget. Eat back what you burn. Set Activity Level to everyday baseline so workouts are not double-counted. Turn on Health Connect under Profile → Health Data for measured burn.</string>
     <string name="home_calorie_mode_add_active_hc_hint">Tip: enable Health Connect to use watch/phone active calories instead of the activity-level estimate.</string>
     <string name="home_calorie_full_credit">Credit the full workout</string>
     <string name="home_calorie_full_credit_desc">Adds today’s measured burn on top of your full calorie goal. Off, the gauge holds back a typical day’s burn so a high reading is not eaten back twice.</string>
@@ -2842,4 +2840,27 @@
     <string name="diary_deficit_chart_title">Calorie deficit</string>
     <string name="diary_deficit_total">Deficit for the period: %1$s %2$s ≈ %3$s</string>
     <string name="diary_surplus_total">Surplus for the period: %1$s %2$s ≈ %3$s</string>
+    <string name="model_required_title">AI model needed</string>
+    <string name="model_required_food">Food analysis needs an AI model. Install the local model or connect a remote one in the Coach tab.</string>
+    <string name="model_required_goals">Recalculating goals needs an AI model. Install the local model or connect a remote one in the Coach tab.</string>
+    <string name="model_required_open_coach">Open Coach</string>
+    <string name="coach_model_card_text">To answer, I need an AI model. Pick one:</string>
+    <string name="coach_model_remote">Connect a remote model</string>
+    <string name="coach_model_remote_hint">A cloud provider (Gemini, OpenAI, Claude, OpenRouter…) with your API key.</string>
+    <string name="coach_model_install_local">Install the local model (%1$s)</string>
+    <string name="coach_model_use_local">Use the local model</string>
+    <string name="coach_model_local_hint">Runs on the phone without the internet. Downloads once over Wi‑Fi or mobile data.</string>
+    <string name="coach_model_local_unsupported">This device can’t run the local model (it needs 4 GB of memory or more).</string>
+    <string name="coach_model_waiting_network">Waiting for an internet connection — the download starts by itself.</string>
+    <string name="coach_model_downloading">Downloading the model… %1$d%%</string>
+    <string name="coach_model_verifying">Checking the file…</string>
+    <string name="coach_model_failed">Download failed: %1$s</string>
+    <string name="coach_remote_setup_title">Connect a remote model</string>
+    <string name="coach_remote_setup_steps">1. Get an API key on the provider’s website, for example Google AI Studio for Gemini.\n2. Open Profile → AI Provider.\n3. Tap “Provider” and pick the service, then pick a model.\n4. Tap “API key” and paste the key.\n5. Come back to Coach — it answers your last question by itself.</string>
+    <string name="ai_profile_default_local">Local model</string>
+    <string name="ai_profile_default_remote">Remote model</string>
+    <string name="calorie_plan_subtitle">Calories for your current weight. Move the slider and tap Save.</string>
+    <string name="calorie_plan_goal_weight_title">Desired weight</string>
+    <string name="calorie_plan_goal_weight_note">Your current weight: %1$s. Weight goal: %2$s.</string>
+    <string name="coach_remote_setup_open">Open AI Provider</string>
 </resources>

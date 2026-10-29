@@ -335,7 +335,6 @@
     <string name="onboarding_pace_caption_slow">Nazik ve sürdürülebilir. Uzun vadeli alışkanlıklar için harika.</string>
     <string name="onboarding_pace_caption_fast">Hırslı ama uygulanabilir. Güçlü disiplin gerektirir.</string>
     <string name="onboarding_pace_caption_recommended">En dengeli tempo, motive edici ve sürdürülebilir.</string>
-    <string name="onboarding_pace_capped">Bu tempo, tahmini dinlenme harcamanın altına inmeden senin yapın için mümkün değil. Hedefin %1$d %2$s olacak.</string>
 
     <string name="onboarding_notifications_title">Öğün kaydı için\nhatırlat</string>
     <string name="onboarding_notifications_subtitle">Öğün saatlerinde nazik hatırlatmalar al,\nböylece takip etmeyi unutmazsın.</string>
@@ -388,8 +387,6 @@
 
     <string name="onboarding_plan_title">Planın</string>
     <string name="onboarding_plan_daily_calories">günlük kalori</string>
-    <string name="onboarding_plan_doctor_title">Lütfen bir doktora danışın</string>
-    <string name="onboarding_plan_doctor_message">Minimum öneri günde %1$skaloridir.</string>
     <string name="onboarding_minor_title">Yalnızca yetişkin formülleri</string>
     <string name="onboarding_minor_message">Bu uygulama yetişkin kalori formüllerini kullanır. 18 yaşından küçüksen, bu hedefleri kullanmadan önce bir sağlık uzmanına sor.</string>
     <string name="onboarding_minor_continue">Anladım</string>
@@ -1104,7 +1101,6 @@
     <string name="settings_gemini_google_search">Google Arama temellendirmesi</string>
     <string name="settings_gemini_google_search_footer">Etkinleştirildiğinde Gemini, bir soruyu yanıtlamaya yardımcı olduğunda web\'de arama yapabilir. Arama sorguları Google\'a gönderilir. Google, bunun için Gemini API projene fatura keser. Gemini 3 modellerinde yürütülen her arama sorgusu kullanıma sayılır; Gemini 2.5 ve eski sürümlerde arama kullanan her istem için faturalandırılır.</string>
     <string name="settings_ai_features_master">AI özellikleri</string>
-    <string name="settings_ai_features_master_footer">AI sağlayıcısına veri gönderen her şeyi kapatır: koç, fotoğraf/metin/ses kaydı, “Ya şöyle olsaydı?” ve AI hedef önerileri. Barkod, yemek arama, manuel giriş, kayıtlı öğünler, su, senkronizasyon ve Health Connect normal şekilde çalışmaya devam eder.</string>
     <string name="settings_show_coach_tab">Koç sekmesini göster</string>
     <string name="settings_show_coach_tab_footer">Koç sekmesini alt çubuktan gizler. Koç özelliği etkin kalır; yukarıdaki AI özellikleri anahtarı her şeyi kapatır.</string>
     <string name="settings_meal_constituents">Öğün malzemesi dökümü</string>
@@ -1371,24 +1367,17 @@
     <string name="sync_success_applied">Senkronizasyon belgesi uygulandı</string>
 
     <!-- AI provider errors (resolved at the UI layer) -->
-    <string name="ai_error_no_api_key">API anahtarı yapılandırılmamış. Ayarlar → AI Sağlayıcısı bölümünden anahtarını ekle.</string>
     <string name="ai_error_image_conversion_failed">Görüntü işlenemedi.</string>
     <string name="ai_error_network_format">Ağ hatası: %1$s</string>
     <string name="ai_error_invalid_response">AI yanıtı anlaşılamadı. Lütfen tekrar dene.</string>
     <string name="ai_error_timeout">AI sağlayıcısı yanıtlamak için çok uzun sürdü. Tekrar dene veya Ayarlar → AI ve Ses bölümünden zaman aşımını artır.</string>
-    <string name="ai_error_disabled">AI özellikleri Ayarlar → AI ve Ses bölümünde kapatılmış.</string>
     <string name="ai_error_invalid_url">Geçersiz API URL\'si. Sağlayıcı ayarlarını kontrol et.</string>
     <string name="ai_error_insecure_http_blocked">Güvensiz HTTP engellendi. Ayarlar → AI ve Ses bölümünde «Güvensiz HTTP\'ye izin ver»i aç veya https:// adresi kullan.</string>
-    <string name="ai_error_on_device_model_not_downloaded">Cihazdaki model henüz indirilmedi. İndirmek için Ayarlar → AI Sağlayıcısı → Model bölümünü aç.</string>
-    <string name="ai_error_on_device_unsupported_device">Bu cihaz, cihazdaki AI gereksinimlerini karşılamıyor. Ayarlar → AI Sağlayıcısı bölümünden bir bulut sağlayıcısı seç.</string>
-    <string name="ai_error_on_device_low_memory">Şu anda cihazdaki yapay zekâ için yeterli boş bellek yok. Daha küçük E2B modelini dene, diğer uygulamaları kapat veya Ayarlar → AI Sağlayıcısı bölümünden sağlayıcı değiştir.</string>
-    <string name="ai_error_on_device_engine_init">Cihazda model motoru başlatılamadı. Yeniden deneyin, Ayarlar → AI Sağlayıcısı → Model bölümünden modeli kaldırın veya bulut sağlayıcısına geçin.</string>
     <string name="ai_error_key_rejected">API anahtarın reddedildi. Ayarlar → AI Sağlayıcısı bölümünü aç ve geçerli bir anahtarı yeniden yapıştır.</string>
     <string name="ai_error_location_unsupported">Gemini bu ağ konumundan (ülke/IP) kullanılamıyor. VPN kullanıyorsan kapat veya konut çıkışına geç. Veri merkezi/konut dışı VPN IP\'leri genellikle engellenir. Veya Google AI Studio projesinde faturalandırmayı etkinleştir, başka bir ağ dene ya da Ayarlar → AI Sağlayıcısı bölümünden sağlayıcıyı değiştir.</string>
     <string name="ai_error_provider_overloaded">AI sağlayıcısı şu anda aşırı yüklü. Birkaç kez denedik. Bir dakika içinde tekrar dene veya Ayarlar → AI Sağlayıcısı bölümünden farklı bir sağlayıcıya/model geç.</string>
     <string name="ai_error_rate_limit">API anahtarında hız sınırına ulaşıldı. Bir dakika bekle veya Ayarlar → AI Sağlayıcısı bölümünden başka bir sağlayıcıya geç. Ücretsiz katmanda Flash-Lite modeli en yüksek kotaya sahiptir.</string>
     <string name="ai_error_model_unavailable">Sağlayıcın bu modeli bulamadı. Ücretsiz katmanda yalnızca ücretli olabilir, bölgende kısıtlı olabilir veya uç nokta yanlış olabilir. Ayarlar → AI Sağlayıcısı bölümünden varsayılan Flash modeline geç veya AI Studio projende faturalandırmayı etkinleştir.</string>
-    <string name="ai_error_coach_on_device">Koç, cihazdaki sağlayıcıyla henüz kullanılamıyor. Ayarlar → AI Sağlayıcısı bölümünden bir bulut sağlayıcısına geç.</string>
     <string name="ai_error_coach_round_limit">Koç yanıtlayamadı. Sorunu farklı şekilde ifade etmeyi dene.</string>
     <string name="ai_error_truncated_twice">AI yanıtı yanıt uzunluğu sınırında iki kez kesildi. Ayarlar → AI ve Ses bölümünden maksimum yanıt uzunluğunu artır ya da daha kısa bir soru dene.</string>
     <string name="ai_error_truncated_twice_description">Model cevabı bitirmeden yanıt uzunluğu sınırına ulaştı ve düşünme de bu sınıra dahil. Ayarlar → AI ve Ses bölümünden maksimum yanıt uzunluğunu artır ya da modelin düşünmesini sınırla, sonra tekrar dene.</string>

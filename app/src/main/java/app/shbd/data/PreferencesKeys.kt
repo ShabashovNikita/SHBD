@@ -313,6 +313,16 @@ internal object Keys {
         /** #46: adjustable on-device memory reserve percent (0 = default 5%, clamped 0..20 at the setter). */
         val ON_DEVICE_HEADROOM_PERCENT = intPreferencesKey("onDeviceHeadroomPercent")
         val ON_DEVICE_FEATURE_VISIBLE = booleanPreferencesKey("onDeviceFeatureVisible")
+        /** One-shot move onto the embedded model (see PreferencesStoreEmbeddedAi.kt) done. */
+        val EMBEDDED_AI_MIGRATED = booleanPreferencesKey("embeddedAiMigrated")
+        /** One-shot removal of auto-created empty cloud profiles and the fallback slot done. */
+        val AI_PROFILES_CLEANED_UP = booleanPreferencesKey("aiProfilesCleanedUp")
+        /** One-shot seeding of the local + remote default profiles (and AI-features reset) done. */
+        val AI_DEFAULT_PROFILES_SEEDED = booleanPreferencesKey("aiDefaultProfilesSeeded")
+        /** One-shot tagging of the two default profiles with their [app.shbd.models.AiProfilePreset] done. */
+        val AI_PROFILE_PRESETS_MARKED = booleanPreferencesKey("aiProfilePresetsMarked")
+        /** One-shot switch-off of the retired meal-planning toggle done. */
+        val MEAL_PLANNING_RETIRED = booleanPreferencesKey("mealPlanningRetired")
         val SYNC_REVISIONS = stringPreferencesKey("syncRevisions")
         val WEBDAV_URL = stringPreferencesKey("webDavUrl")
         val MEALIE_BASE_URL = stringPreferencesKey("mealieBaseUrl")

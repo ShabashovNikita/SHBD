@@ -1,0 +1,129 @@
+# Дизайн: анкета рациона на неделю
+
+## Контекст
+
+Требования — в `specs/ration-survey/spec.md` и `specs/main-navigation/spec.md`.
+
+Как устроено сейчас:
+- Маршрут `ShbdRoutes.RATION` в `ui/navigation/ShbdNavHost.kt` показывает
+  `ui/ration/RationPlaceholderScreen.kt` (строки `ration_placeholder_title/body`).
+- Настройки хранятся в DataStore через `PreferencesStore` и файлы-расширения
+  `data/PreferencesStore*.kt`; ключи — в `data/PreferencesKeys.kt`. Сложные значения хранятся как
+  JSON-строка через kotlinx.serialization (`@Serializable`, примеры: `PreferencesStoreSync.kt`,
+  `PreferencesStoreHealth.kt`).
+- Опрос первого запуска (`ui/onboarding/`) уже даёт готовые элементы: `StepHeader`,
+  `SelectionCard`, `ChoiceRow`, `ToggleCard` в `OnboardingPrimitives.kt`, сохранение черновика с
+  шагом (`OnboardingDraft`).
+- Норма калорий: `UserProfile.effectiveCalories` (ручное значение или формула), ту же цифру
+  показывает Дневник.
+
+Ответы пользователя на вопросы перед этим изменением: рацион только на одного человека (без семьи);
+«предпочтения по кухне» — кухни мира (дальше по ним модель с инструментами будет подбирать блюда
+из кафе и советы по готовке); «готовит ли сам» — время и сложность готовки плюс повторы и дни
+готовки впрок; доставку спрашиваем сейчас, помечаем «появится позже».
+
+## Цели / Не цели
+
+**Цели:**
+- Собрать и сохранить ответы, нужные движку меню (`ration-engine`), в виде одной модели данных.
+- Анкета, которую можно прервать и продолжить, и итоговый экран с изменением ответов.
+- Логика шагов и проверок — в чистом Kotlin с юнит-тестами.
+
+**Не цели:**
+- Построение меню, продукты и рецепты, цены, список покупок — `ration-engine` и
+  `ration-week-screen`.
+- Тип питания (вегетарианство и т. п.) и любимые продукты — по ответу пользователя в анкету не
+  входят; вегетарианцы пока могут добавить мясо и рыбу в «Не люблю»/стоп-лист. Если понадобится —
+  добавим отдельным шагом (модель ответов это позволяет без миграции, см. решение 2).
+- Вызовы встроенной модели по кухням мира, кафе и доставка — будущие изменения.
+- Синхронизация ответов с сервером — после `backend-accounts`.
+
+## Решения
+
+### 1. Модель ответов `RationSurveyAnswers` в `models/`
+```kotlin
+@Serializable data class RationSurveyAnswers(
+    val meals: Set<RationMeal> = setOf(BREAKFAST, LUNCH, DINNER),
+    val weeklyBudgetRub: Int? = 3000,          // null = без ограничения
+    val allergens: Set<Allergen> = emptySet(),
+    val dislikes: Set<Dislike> = emptySet(),
+    val stopFoods: List<String> = emptyList(),
+    val cookingTime: CookingTime = CookingTime.NORMAL,   // NONE, QUICK, NORMAL, LOVE
+    val repeatLimit: Int = 2,                  // 1..3
+    val cookDays: Set<DayOfWeek> = setOf(WEDNESDAY, SATURDAY),
+    val kitchen: Set<KitchenTool> = setOf(STOVE, OVEN, MICROWAVE),
+    val cuisines: Set<Cuisine> = setOf(Cuisine.ANY),
+    val deliveryWanted: Boolean = false,
+)
+```
+Перечисления хранят только идентификаторы; подписи и эмодзи — в `ui/ration/RationSurveyLabels.kt`
+(строковые ресурсы). Чистые функции рядом с моделью: `budgetLevel(rub)`, `addStopFood(list, text)`
+(обрезка, пустое, повтор без учёта регистра, ≤ 40 символов), `toggleCuisine(set, c)` (взаимное
+исключение «Любая»), `normalized()` (пустые `cuisines` → `ANY`, `repeatLimit` в 1..3, бюджет в
+1 000..15 000 с шагом 100).
+*Почему:* движок меню получит одну неизменяемую структуру, а все правила проверяются юнит-тестами
+без Android.
+
+### 2. Хранение: один JSON-ключ DataStore
+`data/PreferencesStoreRation.kt`: ключ `rationSurvey` (строка JSON) с обёрткой
+`RationSurveyState(answers, step: RationSurveyStep, completed: Boolean)`. Чтение —
+`Flow<RationSurveyState>`; повреждённый или пустой JSON → состояние по умолчанию (анкета не
+пройдена, шаг — приветствие). Json с `ignoreUnknownKeys = true` и `coerceInputValues = true`,
+поэтому новые поля с умолчаниями и удалённые значения перечислений не ломают сохранённые ответы.
+*Альтернатива:* отдельные ключи на каждое поле — больше кода и нет атомарности при сохранении шага
+вместе с ответами.
+
+### 3. Шаги как перечисление + чистая навигация
+`enum class RationSurveyStep { INTRO, MEALS, BUDGET, RESTRICTIONS, COOKING, KITCHEN, CUISINES,
+DELIVERY, SUMMARY }`. Функции `visibleSteps(answers)` (без `KITCHEN` при `CookingTime.NONE`),
+`next(step, answers)`, `previous(step, answers)`, `stepNumber(step, answers)` → «Шаг N из M»,
+`canProceed(step, answers)` (на `MEALS` — хотя бы один приём пищи). Если пользователь вернулся на
+«Готовку» и сменил ответ так, что текущий набор шагов изменился, `next` всё равно считается по
+текущим ответам.
+*Почему:* условный пропуск и номер шага проверяются юнит-тестами; экран только рисует.
+
+### 4. Один экран с переключением шагов, без вложенных маршрутов
+`RationScreen` (заменяет заглушку в `composable(ShbdRoutes.RATION)`) берёт состояние из
+`RationSurveyViewModel` и через `AnimatedContent` показывает приветствие, шаг или итог. Системная
+кнопка «Назад» перехватывается `BackHandler(enabled = шаг > первого шага анкеты)` и вызывает
+`previous`; на приветствии, первом шаге и итоге `BackHandler` выключен, и срабатывает общий
+переход на «Дневник». Нижнее меню не скрывается.
+*Почему:* шаги не нужны в навигации приложения и в ссылках `shbd://go/…`; один маршрут проще и
+не трогает правила скрытия меню.
+
+### 5. ViewModel
+`RationSurveyViewModel(prefs, profileFlow)`: `state: StateFlow<RationSurveyUiState>` (ответы, шаг,
+номер шага, `canProceed`, норма калорий). Методы `start()`, `update(transform)`, `next()`, `back()`,
+`finish()`, `editAnswers()`. Каждое изменение сразу пишется в DataStore (`update` + текущий шаг).
+Текст поля стоп-листа держится в UI (`rememberSaveable`), в хранилище попадает только добавленный
+продукт. Фабрика — по образцу остальных ViewModel через `AppContainer`.
+
+### 6. Компоненты интерфейса
+Элементы опроса (`StepHeader`, `SelectionCard`, `ChoiceRow`, `ToggleCard`) сейчас `internal` в
+пакете `ui.onboarding` — модуль один, поэтому их можно использовать напрямую, без переноса.
+Метки стоп-листа и кухонь — `FilterChip`/`InputChip` Material 3 в `FlowRow`. Бегунок бюджета —
+`Slider` с `steps` по 100 ₽. Для итогового экрана — карточки в стиле Дневника. Превью light/dark
+для каждого шага и итога (скриншот-тесты — по образцу соседних экранов).
+
+### 7. Строки
+Новые строки с префиксом `ration_survey_*` в `values/strings.xml` и `values-ru/strings.xml`.
+Остальные 16 языков получают английский текст автоматически (Android берёт `values/`). Строки
+заглушки `ration_placeholder_*` удаляются во всех локалях вместе с `RationPlaceholderScreen.kt`.
+Суммы в рублях форматируются по локали с неразрывным пробелом («2 000 ₽»).
+
+## Риски / компромиссы
+
+- [Бюджет без движка] Минимальная реальная стоимость меню зависит от рецептов и цен, которых ещё
+  нет → пока фиксированный диапазон 1 000–15 000 ₽. В `ration-engine` при сборке меню будет
+  предупреждение «бюджет впритык», если меню не укладывается.
+- [Нет типа питания] Вегетарианцу придётся отмечать мясо/рыбу в ограничениях → записано в «Не
+  цели»; легко добавить шагом позже.
+- [Кухни мира без рецептов] У будущих рецептов должен быть признак кухни → учесть в
+  `ration-engine` (поле `cuisine` у рецепта, «Домашняя» по умолчанию).
+- [Норма калорий меняется] Итог показывает текущее значение из профиля, а не копию → цифра всегда
+  совпадает с Дневником.
+
+## План миграции
+
+Новый ключ DataStore, старые данные не меняются. Откат — вернуть прежнюю сборку: ключ
+`rationSurvey` просто не читается.

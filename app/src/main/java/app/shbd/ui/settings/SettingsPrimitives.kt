@@ -83,7 +83,7 @@ import java.time.format.DateTimeFormatter
 import app.shbd.models.UnitFormat
 
 internal enum class SettingsSheet {
-    AI_PROFILE, ADD_PROFILE_NAME, PROFILE_RENAME, FALLBACK_PROFILE,
+    AI_PROFILE, ADD_PROFILE_NAME, PROFILE_RENAME,
     AI_PROVIDER, AI_MODEL, VISION_MODEL, AI_REASONING_EFFORT, GOAL_RECALC_TIER, MAX_TOKENS, AI_READ_TIMEOUT, API_KEY, CUSTOM_BASE_URL, ON_DEVICE_MODEL, FILL_GAPS, SPEECH_PROVIDER, SPEECH_LANGUAGE, SPEECH_KEY,
     SERVING_UNIT_MODE, SERVING_UNIT_HEURISTICS,
     GENDER, BIRTHDAY, HEIGHT, WEIGHT, BODY_FAT, GOAL_BODY_FAT, ACTIVITY, GOAL, DIET_MODE, DIET_CARB_MODE, DIET_CARB_TARGET, GOAL_WEIGHT, GOAL_SPEED,
@@ -157,6 +157,8 @@ internal fun SettingRow(
     // right-chevron to signal the inline dropdown affordance. Pass inlineMenu=true
     // for Gender, Weight Goal, and Activity Level.
     inlineMenu: Boolean = false,
+    // false for plain action rows (Add / Rename / Delete profile): no trailing icon.
+    showChevron: Boolean = true,
     onClick: () -> Unit
 ) {
     Row(
@@ -188,19 +190,21 @@ internal fun SettingRow(
         )
         Spacer(Modifier.weight(1f))
         Box {
-            Icon(
-                if (inlineMenu) Icons.Filled.UnfoldMore else Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .size(if (inlineMenu) 18.dp else 24.dp)
-            )
+            if (showChevron) {
+                Icon(
+                    if (inlineMenu) Icons.Filled.UnfoldMore else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Disabled),
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .size(if (inlineMenu) 18.dp else 24.dp)
+                )
+            }
             Text(
                 value,
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .padding(end = if (inlineMenu) 18.dp else 24.dp),
+                    .padding(end = if (!showChevron) 0.dp else if (inlineMenu) 18.dp else 24.dp),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Muted),
                 maxLines = 1,

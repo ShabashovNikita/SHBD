@@ -55,13 +55,11 @@ internal fun OnDeviceModelSheet(
     onDelete: () -> Unit,
     onStartDownload: () -> Unit,
     onCancelDownload: () -> Unit,
-    onSetOverWifiOnly: (Boolean) -> Unit,
     onSetHeadroomPercent: (Int) -> Unit,
 ) {
     val manager = container.onDeviceModelDownloadManager
     val entry = remember(selectedModelId) { ModelCatalog.forModelId(selectedModelId) }
     val state by manager.state(selectedModelId).collectAsState(initial = OnDeviceDownloadState.NotDownloaded)
-    val overWifiOnly by container.prefs.onDeviceDownloadOverWifiOnly.collectAsState(initial = true)
     val storageEpoch by manager.storageEpoch.collectAsState()
     val isLoaded = container.onDeviceLlmGateway.isLoaded
     val occupiedBytes = remember(entry, state, storageEpoch) { manager.occupiedBytes() }
@@ -125,17 +123,21 @@ internal fun OnDeviceModelSheet(
                     )
                     Spacer(Modifier.height(8.dp))
                 }
-                ToggleRow(
-                    label = stringResource(R.string.on_device_model_wifi_only),
-                    checked = overWifiOnly,
-                    onChange = onSetOverWifiOnly
-                )
-                Spacer(Modifier.height(8.dp))
                 ShbdPrimaryButton(flushDrafts = true,
                     text = stringResource(R.string.on_device_model_download),
                     enabled = hasEnoughSpace,
                     onClick = onStartDownload
                 )
+            }
+            is OnDeviceDownloadState.WaitingForNetwork -> {
+                Text(
+                    stringResource(R.string.coach_model_waiting_network),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Spacer(Modifier.height(12.dp))
+                TextButton(onClick = onCancelDownload, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.action_cancel))
+                }
             }
             is OnDeviceDownloadState.Downloading -> {
                 Text(

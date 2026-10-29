@@ -84,6 +84,7 @@ internal object ModelDownloadPolicy {
         isDownloaded: Boolean,
         failureReason: String?,
         defaultFailure: String,
+        networkUnavailable: Boolean = false,
     ): OnDeviceDownloadState {
         // The final file on disk always wins: a process kill after rename
         // (or SUCCEEDED from a stale work record) must not hide a ready model.
@@ -107,6 +108,8 @@ internal object ModelDownloadPolicy {
             // NotDownloaded and flash 0% even with a gigabyte already on disk.
             WorkInfo.State.ENQUEUED, WorkInfo.State.BLOCKED ->
                 if (partComplete) OnDeviceDownloadState.Verifying
+                // Queued because the required network (Wi-Fi for "Wi-Fi only") is absent.
+                else if (networkUnavailable) OnDeviceDownloadState.WaitingForNetwork(partProgress)
                 else OnDeviceDownloadState.Downloading(partProgress)
             // Success without a file: the worker bailed early (AI master
             // switch off) or the file was deleted. Do not claim Downloaded.

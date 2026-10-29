@@ -52,9 +52,13 @@ import app.shbd.services.health.HealthConnectReadSync
 import app.shbd.services.health.HealthSyncWorker
 import app.shbd.services.health.HomeActivityReader
 import app.shbd.sync.SyncRepository
+import app.shbd.services.ondevice.AiAvailability
 import app.shbd.services.ondevice.ModelCatalog
 import app.shbd.services.ondevice.ModelDownloadManager
+import app.shbd.services.ondevice.OnDeviceCapability
 import app.shbd.services.ondevice.OnDeviceLlmGateway
+import app.shbd.services.ondevice.aiAvailability
+import app.shbd.services.ondevice.remoteConfigured
 import app.shbd.services.speech.SpeechService
 import app.shbd.services.weather.OpenMeteoClient
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -62,7 +66,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -96,12 +102,22 @@ class ShbdApp : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
-        seedDebugGeminiKeyIfNeeded()
         container.notifications.createChannels()
         LauncherShortcuts.publish(this)
         appScope.launch { container.prefs.migrateHomeDisplayLayoutIfNeeded() }
         appScope.launch { container.prefs.migrateCaffeineDailyLimitIfNeeded() }
-        appScope.launch { container.prefs.ensureAiProfilesMigrated(container.keyStore, this@ShbdApp) }
+        appScope.launch {
+            container.prefs.ensureAiProfilesMigrated(container.keyStore, this@ShbdApp)
+            if (container.prefs.migrateToEmbeddedAi()) {
+                container.onDeviceModelDownloadManager.deleteRetiredModels()
+            }
+            container.prefs.cleanUpAiProfiles(container.keyStore)
+            container.prefs.seedDefaultAiProfiles(
+                localName = getString(R.string.ai_profile_default_local),
+                remoteName = getString(R.string.ai_profile_default_remote),
+            )
+        }
+        appScope.launch { container.prefs.disableMealPlanningOnce() }
         container.prefs.mealCatalog
             .onEach {
                 CurrentMealCatalog.value = it
@@ -206,21 +222,6 @@ class ShbdApp : Application() {
         const val WIDGET_OBSERVE_DELAY_MS = 2_000L
         const val DEFERRED_STARTUP_DELAY_MS = 2_500L
     }
-
-    /**
-     * Debug-only: if local.properties carries a GEMINI_API_KEY, seed it
-     * into the encrypted KeyStore once so testing survives reinstalls without
-     * re-typing the key in Settings. Only fills an empty slot — a key you set or
-     * change in Settings always wins and is never overwritten on later launches.
-     * Release builds compile GEMINI_API_KEY to "" so this is a no-op there.
-     */
-    private fun seedDebugGeminiKeyIfNeeded() {
-        if (!BuildConfig.DEBUG) return
-        val key = BuildConfig.GEMINI_API_KEY
-        if (key.isBlank()) return
-        if (!container.keyStore.apiKey(AIProvider.GEMINI).isNullOrBlank()) return
-        container.keyStore.setApiKey(AIProvider.GEMINI, key)
-    }
 }
 
 class AppContainer(app: ShbdApp) {
@@ -281,6 +282,22 @@ class AppContainer(app: ShbdApp) {
 
     val onDeviceLlmGateway = OnDeviceLlmGateway(appContext, prefs)
     val onDeviceModelDownloadManager = ModelDownloadManager(appContext)
+    /** The device can run the embedded model (ABI + RAM floor); fixed for the process. */
+    val onDeviceSupported: Boolean by lazy(LazyThreadSafetyMode.NONE) {
+        OnDeviceCapability.isSupported(appContext)
+    }
+    /** Live [AiAvailability] of the active model: switch, active profile + its key, embedded model file. */
+    val aiAvailability: Flow<AiAvailability>
+        get() = combine(
+            prefs.aiFeaturesEnabled,
+            prefs.activeAiProfile,
+            keyStore.changes,
+            onDeviceModelDownloadManager.state(ModelCatalog.default.modelId),
+        ) { enabled, profile, _, state ->
+            val provider = profile?.provider ?: AIProvider.GEMINI
+            val configured = profile != null && remoteConfigured(provider, keyStore.profileApiKey(profile.id), profile.baseUrl)
+            aiAvailability(enabled, provider, configured, state)
+        }
     val foodAnalysis = FoodAnalysisService(
         prefs,
         keyStore,
@@ -323,7 +340,7 @@ class AppContainer(app: ShbdApp) {
             usdaIndex = usdaFoodIndex,
         )
     }
-    val chatService = ChatService(prefs, keyStore, foodAnalysis, fastingRepository = fastingRepository)
+    val chatService = ChatService(prefs, keyStore, foodAnalysis, fastingRepository = fastingRepository, onDeviceGateway = onDeviceLlmGateway)
     val speechService = SpeechService(prefs, keyStore)
 
     val widgetSnapshotWriter = WidgetSnapshotWriter(app, prefs, foodRepository, profileRepository, homeActivityReader, waterRepository, weatherRepository, caffeineRepository)

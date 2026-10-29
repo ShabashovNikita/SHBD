@@ -35,4 +35,14 @@ data class AiProfile(
     /** [app.shbd.data.OpenRouterReasoningEffort.storageKey]; null = global preference. */
     val reasoningEffort: String? = null,
     val geminiGoogleSearch: Boolean? = null,
+    /** Which default profile this is ([AiProfilePreset]); null = a profile the user added. */
+    val preset: AiProfilePreset? = null,
 )
+
+/**
+ * The two default profiles. [LOCAL] always runs the on-device model (no provider
+ * picker); [REMOTE] picks among cloud providers only. User-added profiles have no
+ * preset and can use any provider.
+ */
+@Serializable
+enum class AiProfilePreset { LOCAL, REMOTE }

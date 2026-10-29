@@ -10,6 +10,8 @@ object ShbdRoutes {
     /** SHBD weekly meal plan tab (placeholder until ration-week-screen). */
     const val RATION = "ration"
     const val PLAN_WEEK = "plan-week"
+    /** "Your plan" from the Nutrition card: calorie goal at the current weight. */
+    const val CALORIE_PLAN = "calorie-plan"
     const val SETTINGS = "settings"
     const val SETTINGS_PERSONAL = "settings/personal"
     const val SETTINGS_GOALS = "settings/goals"

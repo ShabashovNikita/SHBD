@@ -94,6 +94,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import app.shbd.services.ondevice.ModelRequiredKind
+import app.shbd.services.ondevice.runIfModelPresent
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
@@ -204,6 +206,8 @@ data class HomeUiState(
     /** Raw photo bytes for the in-flight / pending review (for tip re-analyze / add photo). */
     val pendingAnalysisImages: List<ByteArray> = emptyList(),
     val pendingFoodSource: FoodSource? = null,
+    /** Set when photo / text analysis was tapped without the model; shows ModelRequiredDialog. */
+    val modelRequired: ModelRequiredKind? = null,
     val pendingDraftImageFilename: String? = null,
     /**
      * Set when the pendingAnalysis came from a Saved Meals tap (Recents /
@@ -1979,7 +1983,25 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun analyzeText(description: String) {
+    /**
+     * Starts AI food analysis only when the embedded model is downloaded;
+     * otherwise sets [HomeUiState.modelRequired] and starts nothing.
+     */
+    private fun withModel(block: () -> Unit) {
+        viewModelScope.launch {
+            runIfModelPresent(
+                availability = { container.aiAvailability.first() },
+                onMissing = { _ui.value = _ui.value.copy(modelRequired = ModelRequiredKind.FOOD) },
+                action = { block() },
+            )
+        }
+    }
+
+    fun dismissModelRequired() {
+        _ui.value = _ui.value.copy(modelRequired = null)
+    }
+
+    fun analyzeText(description: String) = withModel {
         runFoodAnalysis(phased = true, configure = { state ->
             state.copy(
                 pendingImageBytes = null,
@@ -1996,7 +2018,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 
-    fun analyzePhoto(bytes: ByteArray) {
+    fun analyzePhoto(bytes: ByteArray) = withModel {
         runFoodAnalysis(phased = true, configure = { state ->
             state.copy(
                 pendingImageBytes = bytes,
@@ -2027,7 +2049,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
         imageBytesList: List<ByteArray>,
         note: String? = null,
         confirmedPortionGrams: Double? = null,
-    ) {
+    ) = withModel {
         viewModelScope.launch {
             val images = imageBytesList.filter { it.isNotEmpty() }.take(10)
             if (images.isEmpty()) return@launch

@@ -182,7 +182,6 @@
     <string name="onboarding_pace_caption_slow">温和且可持续。适合养成长期习惯。</string>
     <string name="onboarding_pace_caption_fast">激进但可行。需要较强的自律。</string>
     <string name="onboarding_pace_caption_recommended">最平衡的节奏，既有动力又可持续。</string>
-    <string name="onboarding_pace_capped">以您的体型，此速度不可能不跌破估计的静息代谢。您的目标将是 %1$d 千卡。 %2$s</string>
 
     <string name="onboarding_notifications_title">提醒你\n记录餐食</string>
     <string name="onboarding_notifications_subtitle">在用餐时间获得温和提醒，\n让你不会忘记记录。</string>
@@ -225,8 +224,6 @@
 
     <string name="onboarding_plan_title">你的计划</string>
     <string name="onboarding_plan_daily_calories">每日卡路里</string>
-    <string name="onboarding_plan_doctor_title">请咨询医生</string>
-    <string name="onboarding_plan_doctor_message">最低建议为每天 %1$s卡路里。</string>
     <string name="onboarding_minor_title">仅限成人计算公式</string>
     <string name="onboarding_minor_message">此应用使用成人卡路里计算公式。如果您未满 18 岁，请在使用这些目标前咨询医疗专业人士。</string>
     <string name="onboarding_minor_continue">我明白了</string>
@@ -835,9 +832,7 @@
     <string name="saved_to_favorites">已保存到收藏</string>
     <string name="action_what_if">会怎样？</string>
     <string name="add_food_relog_kcal">%1$d 千卡 %2$s</string>
-    <string name="ai_error_coach_on_device">教练暂不支持端侧提供商，请在设置 → AI 提供商中切换到云端提供商。</string>
     <string name="ai_error_coach_round_limit">教练无法回答，请尝试换个说法。</string>
-    <string name="ai_error_disabled">AI 功能已在设置 → AI 与语音中关闭。</string>
     <string name="ai_error_grounded_on_device">端侧模型不支持 Grounded 模式。</string>
     <string name="ai_error_grounded_requires_provider">Grounded 模式需要可用的 AI 提供商。</string>
     <string name="ai_error_image_conversion_failed">图片处理失败。</string>
@@ -848,11 +843,6 @@
     <string name="ai_error_location_unsupported">Gemini 在当前网络位置（国家/IP）不可用。如使用 VPN，请关闭或切换到住宅出口。数据中心/非住宅 VPN 的 IP 常被屏蔽。也可以在 Google AI Studio 项目中启用结算、换网络，或在设置 → AI 提供商中更换提供商。</string>
     <string name="ai_error_model_unavailable">提供商找不到此模型。它可能在免费层仅限付费、在你所在地区受限，或端点有误。请在设置 → AI 提供商切换到默认 Flash 模型，或在 AI Studio 项目中启用结算。</string>
     <string name="ai_error_network_format">网络错误：%1$s</string>
-    <string name="ai_error_no_api_key">未配置 API 密钥。请在设置 → AI 提供商中添加密钥。</string>
-    <string name="ai_error_on_device_low_memory">当前空闲内存不足以进行端侧AI。请尝试更小的 E2B 模型、关闭其他应用，或在设置 → AI 提供商中更换提供商。</string>
-    <string name="ai_error_on_device_engine_init">无法在此设备上启动模型引擎。请重试，在设置 → AI 提供商 → 模型中卸载模型，或切换到云端提供商。</string>
-    <string name="ai_error_on_device_model_not_downloaded">端侧模型尚未下载。请打开设置 → AI 提供商 → 模型进行下载。</string>
-    <string name="ai_error_on_device_unsupported_device">此设备不满足端侧 AI 的要求，请在设置 → AI 提供商中选择云端提供商。</string>
     <string name="ai_error_provider_error">AI 提供商返回错误。</string>
     <string name="ai_error_provider_overloaded">AI 提供商当前过载。我们已重试数次。请一分钟后重试，或在设置 → AI 提供商中更换提供商/模型。</string>
     <string name="ai_error_rate_limit">API 密钥已达请求上限。请等待一分钟，或在设置 → AI 提供商中更换提供商。免费层中 Flash-Lite 模型的配额最高。</string>
@@ -1346,7 +1336,6 @@
     <string name="settings_accuracy_title">估算准确性</string>
     <string name="settings_adaptive_goals">自适应目标</string>
     <string name="settings_ai_features_master">AI 功能</string>
-    <string name="settings_ai_features_master_footer">关闭所有向 AI 提供商发送数据的功能：教练、照片/文字/语音记录、“会怎样？”和 AI 目标建议。条码、食物搜索、手动记录、已存餐食、饮水、同步和 Health Connect 仍正常工作。</string>
     <string name="settings_ai_privacy_cloud">食物照片、备注、对话和资料数据会发送给此提供商。只有端侧 Gemma 4 模型会把一切留在手机里。</string>
     <string name="settings_ai_privacy_ollama">Ollama 运行在你自己的电脑上，不会向云端提供商发送任何内容。</string>
     <string name="settings_ai_privacy_ondevice">完全私密：食物分析、“会怎样？”和目标估算都在本设备运行，不会发送到服务器。</string>

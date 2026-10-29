@@ -18,27 +18,15 @@ val keystoreProps = Properties().apply {
     if (keystorePropsFile.exists()) load(keystorePropsFile.inputStream())
 }
 
-// Optional dev convenience: a Gemini API key read from the gitignored
-// secrets.properties in the repository root (add a line `GEMINI_API_KEY=AIza...`). It is baked
-// into the DEBUG BuildConfig only and seeded into the encrypted KeyStore on
-// first launch so you don't have to re-enter it in Settings after every
-// reinstall. Release builds always get an empty string — never ship a key.
-// JEV_API_KEY rides the same debug-only slot (LLM-classifier experimentation):
-// baked into the DEBUG BuildConfig as BuildConfig.JEV_API_KEY, but NOT seeded
-// into the KeyStore (no AIProvider entry) — debug-only harnesses read it directly.
-// secrets.properties is preferred; local.properties works as a fallback, but
-// the Android tooling rewrites that file and can drop the line, so prefer the
-// dedicated file.
+// Optional dev secrets from the gitignored secrets.properties in the repository
+// root. The app runs AI only on the embedded on-device model, so no AI provider
+// key is read. JEV_API_KEY (LLM-classifier experimentation) is baked into the
+// DEBUG BuildConfig only; release builds always get an empty string — never ship a key.
 val secretsProps = Properties().apply {
     rootProject.file("secrets.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
-    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { fallback ->
-        val lp = Properties().apply { load(fallback) }
-        lp.getProperty("GEMINI_API_KEY")?.let { if (getProperty("GEMINI_API_KEY") == null) setProperty("GEMINI_API_KEY", it) }
-    }
 }
 fun bcString(value: String): String =
     "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
-val geminiDebugApiKey: String = (secretsProps.getProperty("GEMINI_API_KEY") ?: "").trim()
 val jevDebugApiKey: String = (secretsProps.getProperty("JEV_API_KEY") ?: "").trim()
 // Optional: -PreleaseAbi=arm64-v8a for a single-ABI release APK (local smoke test /
 // F-Droid). Uses ndk.abiFilters with ABI splits disabled so the artifact is the
@@ -59,6 +47,9 @@ android {
         unitTests {
             // Robolectric (AndroidAppIconManager tests) needs merged resources/manifest.
             isIncludeAndroidResources = true
+            // The app forces the embedded on-device model (EmbeddedAi.enforced).
+            // JVM tests of the retained cloud clients opt out; enforcement tests opt back in.
+            all { it.systemProperty("shbd.embeddedAi.enforce", "false") }
         }
     }
 
@@ -110,7 +101,6 @@ android {
             // apksigner before uploading to a store or release host.
             signingConfigs.findByName("release")?.let { signingConfig = it }
             // Never bake an API key into a shippable build.
-            buildConfigField("String", "GEMINI_API_KEY", bcString(""))
             buildConfigField("String", "JEV_API_KEY", bcString(""))
         }
         debug {
@@ -118,8 +108,6 @@ android {
             // with a release build on the same device.
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
-            // Seeded into the encrypted KeyStore on first launch (see ShbdApp).
-            buildConfigField("String", "GEMINI_API_KEY", bcString(geminiDebugApiKey))
             buildConfigField("String", "JEV_API_KEY", bcString(jevDebugApiKey))
         }
         create("debug2") {

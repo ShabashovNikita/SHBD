@@ -527,6 +527,19 @@ class PreferencesStore(private val appContext: Context) : NutritionSyncStore {
     /** One-shot legacy single-slot → named-profile migration (idempotent). */
     internal suspend fun ensureAiProfilesMigrated(keyStore: KeyStore, context: Context) =
         ensureAiProfilesMigratedImpl(keyStore, context)
+    /** One-shot move onto the embedded model; true when it ran (see PreferencesStoreEmbeddedAi.kt). */
+    internal suspend fun migrateToEmbeddedAi(): Boolean = migrateToEmbeddedAiImpl()
+    /** Makes the embedded model the active AI (Coach "Install the local model"). */
+    suspend fun useEmbeddedModel() = useEmbeddedModelImpl()
+
+    /** One-shot removal of auto-created empty cloud profiles and the fallback slot. */
+    internal suspend fun cleanUpAiProfiles(keyStore: KeyStore) = cleanUpAiProfilesImpl(keyStore)
+    /** One-shot: the local + remote default profiles exist; AI features back on. */
+    internal suspend fun seedDefaultAiProfiles(localName: String, remoteName: String) =
+        seedDefaultAiProfilesImpl(localName, remoteName)
+    /** One-shot switch-off of the retired meal-planning toggle. */
+    internal suspend fun disableMealPlanningOnce() = disableMealPlanningOnceImpl()
+
     val skipPhotoNotePrompt: Flow<Boolean> get() = skipPhotoNotePromptImpl
     suspend fun setSkipPhotoNotePrompt(v: Boolean) = setSkipPhotoNotePromptImpl(v)
     val photoNoteSkipCount: Flow<Int> get() = photoNoteSkipCountImpl

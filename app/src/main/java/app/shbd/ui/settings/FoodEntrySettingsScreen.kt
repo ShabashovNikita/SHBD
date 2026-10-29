@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.UnfoldMore
-import androidx.compose.material.icons.outlined.EventAvailable
 import androidx.compose.material.icons.outlined.LocalDining
 import androidx.compose.material.icons.outlined.Notes
 import androidx.compose.material.icons.outlined.Public
@@ -51,7 +50,6 @@ fun FoodEntrySettingsScreen(
     val ui by vm.ui.collectAsState()
     var sheet by remember { mutableStateOf<SettingsSheet?>(null) }
     var showDefaultGramsInfo by remember { mutableStateOf(false) }
-    var showMealPlanningInfo by remember { mutableStateOf(false) }
 
     SettingsSubScreen(
         title = stringResource(R.string.settings_group_food),
@@ -83,14 +81,6 @@ fun FoodEntrySettingsScreen(
                 checked = ui.mealTimesEnabled,
                 icon = Icons.Outlined.Schedule,
                 onChange = vm::setMealTimesEnabled,
-            )
-            HorizontalDivider()
-            ToggleRowWithInfo(
-                label = stringResource(R.string.settings_meal_planning),
-                checked = ui.mealPlanningEnabled,
-                icon = Icons.Outlined.EventAvailable,
-                onInfo = { showMealPlanningInfo = true },
-                onChange = vm::setMealPlanningEnabled,
             )
             if (ui.mealTimesEnabled) {
                 HorizontalDivider()
@@ -196,19 +186,6 @@ fun FoodEntrySettingsScreen(
             ShbdDialogActions(
                 primaryText = stringResource(R.string.action_ok),
                 onPrimary = { showDefaultGramsInfo = false }
-            )
-        }
-    }
-    if (showMealPlanningInfo) {
-        ShbdDialog(onDismissRequest = { showMealPlanningInfo = false }) {
-            Text(stringResource(R.string.settings_meal_planning), fontSize = 21.sp, fontWeight = FontWeight.Bold)
-            Text(
-                stringResource(R.string.settings_meal_planning_info),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = AppTextOpacity.Secondary)
-            )
-            ShbdDialogActions(
-                primaryText = stringResource(R.string.action_ok),
-                onPrimary = { showMealPlanningInfo = false }
             )
         }
     }

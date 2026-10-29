@@ -7,7 +7,7 @@ import org.junit.Test
 import java.net.SocketTimeoutException
 
 class AiErrorTest {
-    private val keyRejected = "Your API key was rejected. Open Settings → AI Provider and re-paste a valid key."
+    private val keyRejected = "Your API key was rejected. Open Profile → AI Provider and re-paste a valid key."
 
     @Test
     fun badApiKeyOn400ReturnsKeyRejectedGuidance() {
@@ -34,14 +34,14 @@ class AiErrorTest {
     @Test
     fun rateLimitReturnsRateLimitMessage() {
         assertEquals(
-            "Rate limit hit on your API key. Wait a minute, or switch to another provider in Settings → AI Provider. On the free tier, the Flash-Lite model has the highest quota.",
+            "Rate limit hit on your API key. Wait a minute, or switch to another provider in Profile → AI Provider. On the free tier, the Flash-Lite model has the highest quota.",
             friendlyMessage(429, "Too many requests")
         )
     }
 
     @Test
     fun overloadedStatusesReturnOverloadedMessage() {
-        val overloaded = "The AI provider is overloaded right now. We retried a few times. Please try again in a minute, or switch to a different provider/model in Settings → AI Provider."
+        val overloaded = "The AI provider is overloaded right now. We retried a few times. Please try again in a minute, or switch to a different provider/model in Profile → AI Provider."
 
         assertEquals(overloaded, friendlyMessage(503, "Service unavailable"))
         assertEquals(overloaded, friendlyMessage(529, "Overloaded"))
@@ -162,7 +162,7 @@ class AiErrorTest {
     }
 
     private val locationUnsupported =
-        "Gemini isn't available from this network location (country/IP). If you use a VPN, turn it off or switch to a residential exit. Datacenter/non-residential VPN IPs are often blocked. Or enable billing on the Google AI Studio project, try another network, or switch provider in Settings → AI Provider."
+        "Gemini isn't available from this network location (country/IP). If you use a VPN, turn it off or switch to a residential exit. Datacenter/non-residential VPN IPs are often blocked. Or enable billing on the Google AI Studio project, try another network, or switch provider in Profile → AI Provider."
     private val modelUnavailable =
-        "Your provider couldn't find this model. It may be paid-only on the free tier, restricted in your region, or the endpoint may be wrong. Switch to the default Flash model in Settings → AI Provider, or enable billing on your AI Studio project."
+        "Your provider couldn't find this model. It may be paid-only on the free tier, restricted in your region, or the endpoint may be wrong. Switch to the default Flash model in Profile → AI Provider, or enable billing on your AI Studio project."
 }

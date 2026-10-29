@@ -8,6 +8,9 @@ import androidx.security.crypto.MasterKey
 import app.shbd.models.AIProvider
 import app.shbd.models.SpeechProvider
 import java.util.UUID
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Encrypted per-provider API key storage — the Android equivalent of iOS Keychain.
@@ -16,14 +19,20 @@ import java.util.UUID
 class KeyStore(context: Context, prefsOverride: SharedPreferences? = null) {
     private val prefs: SharedPreferences = prefsOverride ?: openOrRecover(context)
 
+    private val _changes = MutableStateFlow(0)
+    /** Bumps on every save or delete, so flows that depend on a key (AI readiness) re-evaluate. */
+    val changes: StateFlow<Int> = _changes.asStateFlow()
+
     fun save(key: String, value: String) {
         prefs.edit().putString(key, value.trim()).apply()
+        _changes.value++
     }
 
     fun load(key: String): String? = prefs.getString(key, null)?.trim()?.takeIf { it.isNotEmpty() }
 
     fun delete(key: String) {
         prefs.edit().remove(key).apply()
+        _changes.value++
     }
 
     // AI providers

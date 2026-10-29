@@ -27,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.DataUsage
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.LocalFireDepartment
@@ -55,7 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.shbd.R
 import app.shbd.models.AIProvider
-import app.shbd.models.AiProfile
+import app.shbd.models.AiProfilePreset
 import app.shbd.models.CalorieSafety
 import app.shbd.models.EnergyFormat
 import app.shbd.models.ActivityLevel
@@ -168,6 +169,10 @@ internal fun SettingsSheets(
                     title = stringResource(R.string.sheet_ai_provider),
                     items = AIProvider.values()
                         .filter { it != AIProvider.ON_DEVICE || ui.onDeviceAvailable }
+                        // Ollama is not offered; a saved Ollama profile keeps working.
+                        .filter { it != AIProvider.OLLAMA }
+                        // The default "Remote model" profile stays in the cloud.
+                        .filter { it != AIProvider.ON_DEVICE || ui.activeProfile?.preset != AiProfilePreset.REMOTE }
                         .sortedBy { it.group.ordinal },
                     label = { stringResource(it.displayNameRes) },
                     subtitle = { stringResource(it.subtitleRes) },
@@ -286,7 +291,6 @@ internal fun SettingsSheets(
                     onDelete = vm::deleteOnDeviceModel,
                     onStartDownload = vm::startOnDeviceModelDownload,
                     onCancelDownload = vm::cancelOnDeviceModelDownload,
-                    onSetOverWifiOnly = vm::setOnDeviceDownloadOverWifiOnly,
                     onSetHeadroomPercent = vm::setOnDeviceHeadroomPercent,
                 )
                 SettingsSheet.FILL_GAPS -> app.shbd.ui.home.FillGapsSheet(
@@ -374,7 +378,7 @@ internal fun SettingsSheets(
                 )
                 SettingsSheet.AI_PROFILE -> {
                     ListSheet(
-                        title = stringResource(R.string.settings_ai_profile),
+                        title = stringResource(R.string.settings_section_ai_profile),
                         items = ui.profiles,
                         label = { it.name },
                         subtitle = { profile ->
@@ -384,17 +388,47 @@ internal fun SettingsSheets(
                         selected = { it.id == ui.activeProfile?.id },
                         onSelect = { vm.selectProfile(it.id.toString()); onDismiss() },
                     )
-                    HorizontalDivider()
+                    Spacer(Modifier.height(8.dp))
                     SettingRow(
                         stringResource(R.string.settings_profile_add),
                         "",
-                        icon = Icons.Outlined.Add
+                        icon = Icons.Outlined.Add,
+                        showChevron = false,
                     ) { onOpenSheet?.invoke(SettingsSheet.ADD_PROFILE_NAME) ?: onDismiss() }
                     SettingRow(
                         stringResource(R.string.settings_profile_rename),
-                        ui.activeProfile?.name ?: "",
-                        icon = Icons.Outlined.Edit
+                        "",
+                        icon = Icons.Outlined.Edit,
+                        showChevron = false,
                     ) { onOpenSheet?.invoke(SettingsSheet.PROFILE_RENAME) ?: onDismiss() }
+                    // Delete needs another profile to switch to, so it hides on the last one.
+                    if (ui.profiles.size > 1) {
+                        var confirmDelete by remember { mutableStateOf(false) }
+                        SettingRow(
+                            stringResource(R.string.settings_profile_delete),
+                            "",
+                            icon = Icons.Outlined.Delete,
+                            showChevron = false,
+                        ) { confirmDelete = true }
+                        if (confirmDelete) {
+                            AlertDialog(
+                                onDismissRequest = { confirmDelete = false },
+                                title = { Text(stringResource(R.string.settings_profile_delete)) },
+                                text = { Text(stringResource(R.string.settings_profile_delete_confirm)) },
+                                confirmButton = {
+                                    TextButton(onClick = {
+                                        confirmDelete = false
+                                        vm.deleteActiveProfile()
+                                    }) { Text(stringResource(R.string.action_delete)) }
+                                },
+                                dismissButton = {
+                                    TextButton(onClick = { confirmDelete = false }) {
+                                        Text(stringResource(R.string.action_cancel))
+                                    }
+                                },
+                            )
+                        }
+                    }
                 }
                 SettingsSheet.ADD_PROFILE_NAME -> TextFieldSheet(
                     title = stringResource(R.string.settings_profile_add),
@@ -417,17 +451,6 @@ internal fun SettingsSheets(
                     placeholder = stringResource(R.string.sheet_profile_name),
                     onSave = { vm.renameActiveProfile(it); onDismiss() },
                     onDismiss = onDismiss
-                )
-                SettingsSheet.FALLBACK_PROFILE -> ListSheet(
-                    title = stringResource(R.string.settings_profile_fallback),
-                    items = listOf<AiProfile?>(null) + ui.profiles.filter { it.id != ui.activeProfile?.id },
-                    label = { it?.name ?: stringResource(R.string.settings_profile_fallback_none) },
-                    subtitle = { profile -> profile?.let { stringResource(it.provider.displayNameRes) } },
-                    selected = { profile ->
-                        if (profile == null) ui.fallbackProfileId == null
-                        else profile.id.toString() == ui.fallbackProfileId
-                    },
-                    onSelect = { vm.setFallbackProfile(it?.id?.toString()); onDismiss() },
                 )
                 SettingsSheet.GENDER -> ListSheet(
                     title = stringResource(R.string.sheet_gender),

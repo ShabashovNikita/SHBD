@@ -170,7 +170,6 @@
     <string name="onboarding_pace_caption_slow">Mild en duurzaam. Geweldig voor langetermijngewoonten.</string>
     <string name="onboarding_pace_caption_fast">Agressief maar haalbaar. Vereist sterke discipline.</string>
     <string name="onboarding_pace_caption_recommended">Het meest gebalanceerde tempo, motiverend en duurzaam.</string>
-    <string name="onboarding_pace_capped">Dit tempo is bij jouw postuur niet mogelijk zonder onder je geschatte rustverbruik te zakken. Je doel wordt %1$d %2$s.</string>
 
     <string name="onboarding_notifications_title">Word herinnerd om\nmaaltijden te loggen</string>
     <string name="onboarding_notifications_subtitle">Krijg vriendelijke herinneringen op maaltijden\nzodat je nooit vergeet bij te houden.</string>
@@ -213,8 +212,6 @@
 
     <string name="onboarding_plan_title">Jouw plan</string>
     <string name="onboarding_plan_daily_calories">dagelijkse calorieën</string>
-    <string name="onboarding_plan_doctor_title">Raadpleeg een arts</string>
-    <string name="onboarding_plan_doctor_message">De minimale aanbeveling is %1$sën per dag.</string>
     <string name="onboarding_minor_title">Alleen formules voor volwassenen</string>
     <string name="onboarding_minor_message">Deze app gebruikt calorieformules voor volwassenen. Ben je jonger dan 18? Vraag dan eerst een zorgverlener voordat je deze doelen gebruikt.</string>
     <string name="onboarding_minor_continue">Ik begrijp het</string>
@@ -804,9 +801,7 @@
     <string name="saved_to_favorites">Opgeslagen in favorieten</string>
     <string name="action_what_if">Wat als?</string>
     <string name="add_food_relog_kcal">%1$d %2$s</string>
-    <string name="ai_error_coach_on_device">Coach is nog niet beschikbaar met de on-device provider. Schakel over naar een cloudprovider in Instellingen → AI-provider.</string>
     <string name="ai_error_coach_round_limit">Coach kon niet antwoorden. Probeer je vraag anders te formuleren.</string>
-    <string name="ai_error_disabled">AI-functies zijn uitgeschakeld in Instellingen → AI en spraak.</string>
     <string name="ai_error_grounded_on_device">De Grounded-modus is niet beschikbaar voor on-device modellen.</string>
     <string name="ai_error_grounded_requires_provider">De Grounded-modus vereist een actieve AI-provider.</string>
     <string name="ai_error_image_conversion_failed">Afbeelding verwerken mislukt.</string>
@@ -817,11 +812,6 @@
     <string name="ai_error_location_unsupported">Gemini is niet beschikbaar vanaf deze netwerklocatie (land/IP). Gebruik je een VPN, zet die dan uit of kies een residentiële exit. Datacenter-/niet-residentiële VPN-IP\'s worden vaak geblokkeerd. Of schakel facturering in op het Google AI Studio-project, probeer een ander netwerk of wissel van provider in Instellingen → AI-provider.</string>
     <string name="ai_error_model_unavailable">Je provider kon dit model niet vinden. Het kan betaald zijn op de gratis laag, beperkt in jouw regio, of de endpoint kan onjuist zijn. Schakel naar het standaard Flash-model in Instellingen → AI-provider of schakel facturering in op je AI Studio-project.</string>
     <string name="ai_error_network_format">Netwerkfout: %1$s</string>
-    <string name="ai_error_no_api_key">Geen API-sleutel geconfigureerd. Voeg je sleutel toe in Instellingen → AI-provider.</string>
-    <string name="ai_error_on_device_low_memory">Nu niet genoeg vrij geheugen voor AI op het apparaat. Probeer het kleinere E2B-model, sluit andere apps of wissel van provider in Instellingen → AI-provider.</string>
-    <string name="ai_error_on_device_engine_init">De modelengine kon op dit apparaat niet worden gestart. Probeer het opnieuw, verwijder het model onder Instellingen → AI-provider → Model of schakel over naar een cloudprovider.</string>
-    <string name="ai_error_on_device_model_not_downloaded">On-device model nog niet gedownload. Open Instellingen → AI-provider → Model om het te downloaden.</string>
-    <string name="ai_error_on_device_unsupported_device">Dit apparaat voldoet niet aan de vereisten voor on-device AI. Kies een cloudprovider in Instellingen → AI-provider.</string>
     <string name="ai_error_provider_error">De AI-provider gaf een fout terug.</string>
     <string name="ai_error_provider_overloaded">De AI-provider is nu overbelast. We hebben een paar keer opnieuw geprobeerd. Probeer het over een minuut nog eens of wissel van provider/model in Instellingen → AI-provider.</string>
     <string name="ai_error_rate_limit">Limiet bereikt voor je API-sleutel. Wacht een minuut of wissel van provider in Instellingen → AI-provider. Op de gratis laag heeft het Flash-Lite-model de hoogste quota.</string>
@@ -1324,7 +1314,6 @@
     <string name="settings_accuracy_title">Nauwkeurigheid van schattingen</string>
     <string name="settings_adaptive_goals">Adaptieve doelen</string>
     <string name="settings_ai_features_master">AI-functies</string>
-    <string name="settings_ai_features_master_footer">Zet alles uit dat gegevens naar een AI-provider stuurt: de coach, foto-/tekst-/spraaklogging, «Wat als?» en AI-doelsuggesties. Barcode, voedselzoekopdracht, handmatige invoer, opgeslagen maaltijden, water, synchronisatie en Health Connect blijven gewoon werken.</string>
     <string name="settings_ai_privacy_cloud">Voedselfoto\'s, notities, chat en profielgegevens worden naar deze provider gestuurd. Alleen de on-device Gemma 4-modellen houden alles op je telefoon.</string>
     <string name="settings_ai_privacy_ollama">Ollama draait op je eigen computer. Er wordt niets naar een cloudprovider gestuurd.</string>
     <string name="settings_ai_privacy_ondevice">Volledig privé: voedselanalyse, «Wat als?» en doelschattingen draaien op dit apparaat. Er wordt niets naar een server gestuurd.</string>

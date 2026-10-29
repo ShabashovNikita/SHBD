@@ -65,12 +65,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.material3.Slider
 import app.shbd.models.LocaleFormat
 import app.shbd.models.WeightGoal
+import app.shbd.models.UserProfile
 import java.time.LocalDate
 import kotlin.math.roundToInt
 import androidx.compose.ui.semantics.stateDescription
 import app.shbd.R
 import app.shbd.models.AIProvider
-import app.shbd.models.CalorieSafety
 import app.shbd.models.EnergyFormat
 import app.shbd.ui.components.ShbdTextField
 import app.shbd.ui.components.OptionPickerSheet
@@ -105,8 +105,7 @@ internal fun BuildingPlanStep(vm: OnboardingViewModel, onComplete: () -> Unit) {
         label = "plan_progress"
     )
 
-    // Compute the plan with AI in parallel with the animation (seeds the Plan Ready targets;
-    // leaves them null on failure so the formula values are used).
+    // The plan itself is the pace formula (OnboardingState.planKcal); this only signals done.
     LaunchedEffect(Unit) { vm.buildPlanWithAI { aiDone = true } }
 
     LaunchedEffect(Unit) {
@@ -208,12 +207,6 @@ internal fun BuildingPlanStep(vm: OnboardingViewModel, onComplete: () -> Unit) {
  */
 @Composable
 internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
-    val profile = state.buildProfile()
-    val unit = LocalEnergyUnit.current
-    val normKcal = profile.tdee.roundToInt()
-    val range = planCalorieRange(state.goal, normKcal)
-    val planKcal = profile.effectiveCalories.coerceIn(range.first, range.last)
-    val days = planDaysToGoal(state.weightKg, state.goalWeightKg, state.goal, normKcal, planKcal)
     val muted = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState())) {
@@ -221,122 +214,11 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
                 stringResource(R.string.onboarding_plan_title),
                 subtitle = stringResource(R.string.onboarding_plan_subtitle)
             )
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                Row(verticalAlignment = Alignment.Bottom) {
-                    Text(
-                        LocaleFormat.integer(EnergyFormat.quantity(planKcal, unit)),
-                        fontSize = 56.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        stringResource(
-                            R.string.onboarding_plan_of_norm,
-                            LocaleFormat.integer(EnergyFormat.quantity(normKcal, unit)),
-                            energyUnitLabel()
-                        ),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = muted,
-                        modifier = Modifier.padding(bottom = 10.dp)
-                    )
-                }
-                Text(
-                    stringResource(R.string.onboarding_plan_norm_caption),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = muted,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                )
-            }
-            Spacer(Modifier.height(12.dp))
-            val sliderCd = stringResource(R.string.onboarding_plan_slider_cd)
-            Slider(
-                value = planKcal.toFloat(),
-                onValueChange = { v ->
-                    val snapped = ((v / PLAN_SLIDER_STEP_KCAL).roundToInt() * PLAN_SLIDER_STEP_KCAL)
-                        .coerceIn(range.first, range.last)
-                    if (snapped != planKcal) vm.setCustomCalories(snapped)
-                },
-                valueRange = range.first.toFloat()..range.last.toFloat(),
-                modifier = Modifier.fillMaxWidth().semantics { contentDescription = sliderCd }
+            PlanCaloriesContent(
+                profile = state.buildPlanProfile(),
+                planKcal = state.planKcal,
+                onPlanChange = { vm.setCustomCalories(it) },
             )
-            Row(Modifier.fillMaxWidth()) {
-                Text(
-                    LocaleFormat.integer(EnergyFormat.quantity(range.first, unit)),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = muted,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    LocaleFormat.integer(EnergyFormat.quantity(range.last, unit)),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = muted
-                )
-            }
-            Spacer(Modifier.height(16.dp))
-            PlanGoalEtaCard(state = state, normKcal = normKcal, planKcal = planKcal, days = days)
-            Spacer(Modifier.height(16.dp))
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                MacroCard(
-                    label = stringResource(R.string.macro_protein),
-                    value = profile.effectiveProtein,
-                    color = AppColors.Protein,
-                    unitRes = R.string.unit_g,
-                    modifier = Modifier.weight(1f)
-                )
-                MacroCard(
-                    label = stringResource(R.string.macro_carbs),
-                    value = profile.effectiveCarbs,
-                    color = AppColors.Carbs,
-                    unitRes = R.string.unit_g,
-                    modifier = Modifier.weight(1f)
-                )
-                MacroCard(
-                    label = stringResource(R.string.macro_fat),
-                    value = profile.effectiveFat,
-                    color = AppColors.Fat,
-                    unitRes = R.string.unit_g,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            if (planKcal < CalorieSafety.floorKcal(profile.bmr)) {
-                Spacer(Modifier.height(16.dp))
-                Card(
-                    shape = RoundedCornerShape(AppRadii.Tile),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.12f)
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        Modifier.padding(14.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Bolt,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.warning,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(Modifier.width(10.dp))
-                        Column {
-                            Text(
-                                stringResource(R.string.onboarding_plan_doctor_title),
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Text(
-                                stringResource(R.string.onboarding_plan_doctor_message, energyText(CalorieSafety.floorKcal(profile.bmr))),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = muted
-                            )
-                        }
-                    }
-                }
-            }
             Spacer(Modifier.height(8.dp))
         }
         // Adaptive Goals is on by default for new installs. The note sits outside the
@@ -351,9 +233,164 @@ internal fun PlanReadyStep(state: OnboardingState, vm: OnboardingViewModel) {
     }
 }
 
+/**
+ * Body of "Your plan", shared by onboarding and the diary's calorie-goal screen:
+ * "plan of norm", the slider, deficit + time to goal, read-only macros and the
+ * doctor note. [profile] carries the plan; its goal, weight and goal weight
+ * drive the time-to-goal line. Does not scroll — the caller's column does.
+ */
+@Composable
+internal fun PlanCaloriesContent(
+    profile: UserProfile,
+    planKcal: Int,
+    onPlanChange: (Int) -> Unit,
+) {
+    val unit = LocalEnergyUnit.current
+    val normKcal = profile.tdee.roundToInt()
+    val range = planCalorieRange(profile.goal, normKcal)
+    val days = profile.goalWeightKg?.let {
+        planDaysToGoal(profile.weightKg, it, profile.goal, normKcal, planKcal)
+    }
+    val muted = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
+    Column(Modifier.fillMaxWidth()) {
+        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(
+                    LocaleFormat.integer(EnergyFormat.quantity(planKcal, unit)),
+                    fontSize = 56.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    stringResource(
+                        R.string.onboarding_plan_of_norm,
+                        LocaleFormat.integer(EnergyFormat.quantity(normKcal, unit)),
+                        energyUnitLabel()
+                    ),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = muted,
+                    modifier = Modifier.padding(bottom = 10.dp)
+                )
+            }
+            Text(
+                stringResource(R.string.onboarding_plan_norm_caption),
+                style = MaterialTheme.typography.bodySmall,
+                color = muted,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+        }
+        Spacer(Modifier.height(12.dp))
+        val sliderCd = stringResource(R.string.onboarding_plan_slider_cd)
+        Slider(
+            value = planKcal.toFloat(),
+            onValueChange = { v ->
+                val snapped = ((v / PLAN_SLIDER_STEP_KCAL).roundToInt() * PLAN_SLIDER_STEP_KCAL)
+                    .coerceIn(range.first, range.last)
+                if (snapped != planKcal) onPlanChange(snapped)
+            },
+            valueRange = range.first.toFloat()..range.last.toFloat(),
+            modifier = Modifier.fillMaxWidth().semantics { contentDescription = sliderCd }
+        )
+        Row(Modifier.fillMaxWidth()) {
+            Text(
+                LocaleFormat.integer(EnergyFormat.quantity(range.first, unit)),
+                style = MaterialTheme.typography.labelSmall,
+                color = muted,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                LocaleFormat.integer(EnergyFormat.quantity(range.last, unit)),
+                style = MaterialTheme.typography.labelSmall,
+                color = muted
+            )
+        }
+        Spacer(Modifier.height(16.dp))
+        PlanGoalEtaCard(
+            goal = profile.goal,
+            goalWeightKg = profile.goalWeightKg,
+            normKcal = normKcal,
+            planKcal = planKcal,
+            days = days,
+        )
+        Spacer(Modifier.height(16.dp))
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            MacroCard(
+                label = stringResource(R.string.macro_protein),
+                value = profile.effectiveProtein,
+                color = AppColors.Protein,
+                unitRes = R.string.unit_g,
+                modifier = Modifier.weight(1f)
+            )
+            MacroCard(
+                label = stringResource(R.string.macro_carbs),
+                value = profile.effectiveCarbs,
+                color = AppColors.Carbs,
+                unitRes = R.string.unit_g,
+                modifier = Modifier.weight(1f)
+            )
+            MacroCard(
+                label = stringResource(R.string.macro_fat),
+                value = profile.effectiveFat,
+                color = AppColors.Fat,
+                unitRes = R.string.unit_g,
+                modifier = Modifier.weight(1f)
+            )
+        }
+        if (planNeedsDoctorWarning(profile.goal, normKcal, planKcal)) {
+            Spacer(Modifier.height(16.dp))
+            Card(
+                shape = RoundedCornerShape(AppRadii.Tile),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.warning.copy(alpha = 0.12f)
+                ),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    Modifier.padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Bolt,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.warning,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    Column {
+                        Text(
+                            stringResource(R.string.onboarding_plan_doctor_title),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            stringResource(R.string.onboarding_plan_doctor_message, energyText(planMinRecommendedKcal(normKcal))),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = muted,
+                            maxLines = 1,
+                            softWrap = false,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 /** "Deficit 863 kcal a day" + "Goal 65.4 kg in about 83 days (by 18 Jan 2027)". */
 @Composable
-private fun PlanGoalEtaCard(state: OnboardingState, normKcal: Int, planKcal: Int, days: Int?) {
+private fun PlanGoalEtaCard(
+    goal: WeightGoal,
+    goalWeightKg: Double?,
+    normKcal: Int,
+    planKcal: Int,
+    days: Int?,
+) {
     val unit = LocalEnergyUnit.current
     val delta = planKcal - normKcal
     Card(
@@ -375,10 +412,12 @@ private fun PlanGoalEtaCard(state: OnboardingState, normKcal: Int, planKcal: Int
                     fontWeight = FontWeight.SemiBold
                 )
             }
-            val goalWeight = stringResource(R.string.kg_value_format, state.goalWeightKg)
+            // A lose/gain goal without a goal weight has no time-to-goal line.
+            if (goal != WeightGoal.MAINTAIN && goalWeightKg == null) return@Column
+            val goalWeight = stringResource(R.string.kg_value_format, goalWeightKg ?: 0.0)
             Text(
                 when {
-                    state.goal == WeightGoal.MAINTAIN -> stringResource(R.string.onboarding_plan_eta_maintain)
+                    goal == WeightGoal.MAINTAIN -> stringResource(R.string.onboarding_plan_eta_maintain)
                     days == null -> stringResource(R.string.onboarding_plan_eta_never, goalWeight)
                     days == 0 -> stringResource(R.string.onboarding_plan_eta_reached)
                     else -> stringResource(

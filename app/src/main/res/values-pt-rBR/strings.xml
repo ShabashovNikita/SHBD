@@ -176,7 +176,6 @@
     <string name="onboarding_pace_caption_slow">Suave e sustentável. Ótimo para hábitos de longo prazo.</string>
     <string name="onboarding_pace_caption_fast">Agressivo, mas viável. Exige bastante disciplina.</string>
     <string name="onboarding_pace_caption_recommended">O ritmo mais equilibrado, motivador e sustentável.</string>
-    <string name="onboarding_pace_capped">Este ritmo não é possível para o seu corpo sem ficar abaixo do metabolismo de repouso estimado. Sua meta será de %1$d %2$s.</string>
 
     <string name="onboarding_notifications_title">Receba lembretes\npara registrar refeições</string>
     <string name="onboarding_notifications_subtitle">Lembretes leves nos horários das refeições\npara você nunca esquecer de registrar.</string>
@@ -219,8 +218,6 @@
 
     <string name="onboarding_plan_title">Seu plano</string>
     <string name="onboarding_plan_daily_calories">calorias diárias</string>
-    <string name="onboarding_plan_doctor_title">Consulte um médico</string>
-    <string name="onboarding_plan_doctor_message">A recomendação mínima é de %1$scalorias por dia.</string>
     <string name="onboarding_minor_title">Somente fórmulas para adultos</string>
     <string name="onboarding_minor_message">Este app usa fórmulas de calorias para adultos. Se você tem menos de 18 anos, pergunte a um profissional de saúde antes de usar essas metas.</string>
     <string name="onboarding_minor_continue">Entendi</string>
@@ -824,9 +821,7 @@
     <string name="saved_to_favorites">Salvo nos favoritos</string>
     <string name="action_what_if">E se...?</string>
     <string name="add_food_relog_kcal">%1$d %2$s</string>
-    <string name="ai_error_coach_on_device">O Coach ainda não está disponível com o provedor no dispositivo. Troque para um provedor em nuvem em Configurações → Provedor de IA.</string>
     <string name="ai_error_coach_round_limit">O Coach não conseguiu responder. Tente reformular sua pergunta.</string>
-    <string name="ai_error_disabled">Os recursos de IA estão desativados em Configurações → IA e fala.</string>
     <string name="ai_error_grounded_on_device">O modo Grounded não está disponível para modelos no dispositivo.</string>
     <string name="ai_error_grounded_requires_provider">O modo Grounded exige um provedor de IA ativo.</string>
     <string name="ai_error_image_conversion_failed">Falha ao processar a imagem.</string>
@@ -837,11 +832,6 @@
     <string name="ai_error_location_unsupported">O Gemini não está disponível nesta localização de rede (país/IP). Se usar VPN, desligue-a ou mude para uma saída residencial. IPs de datacenter/não residenciais de VPN costumam ser bloqueados. Ou ative o faturamento no projeto do Google AI Studio, tente outra rede ou troque de provedor em Configurações → Provedor de IA.</string>
     <string name="ai_error_model_unavailable">Seu provedor não encontrou este modelo. Ele pode ser pago no plano gratuito, restrito na sua região ou o endpoint pode estar errado. Troque para o modelo Flash padrão em Configurações → Provedor de IA ou ative o faturamento no seu projeto do AI Studio.</string>
     <string name="ai_error_network_format">Erro de rede: %1$s</string>
-    <string name="ai_error_no_api_key">Nenhuma chave de API configurada. Adicione sua chave em Configurações → Provedor de IA.</string>
-    <string name="ai_error_on_device_low_memory">Não há memória livre suficiente para IA no dispositivo agora. Tente o modelo E2B menor, feche outros apps ou troque de provedor em Configurações → Provedor de IA.</string>
-    <string name="ai_error_on_device_engine_init">Não foi possível iniciar o mecanismo do modelo neste dispositivo. Tente novamente, descarregue o modelo em Configurações → Provedor de IA → Modelo ou mude para um provedor em nuvem.</string>
-    <string name="ai_error_on_device_model_not_downloaded">Modelo no dispositivo ainda não baixado. Abra Configurações → Provedor de IA → Modelo para baixá-lo.</string>
-    <string name="ai_error_on_device_unsupported_device">Este aparelho não atende aos requisitos para IA no dispositivo. Escolha um provedor em nuvem em Configurações → Provedor de IA.</string>
     <string name="ai_error_provider_error">O provedor de IA retornou um erro.</string>
     <string name="ai_error_provider_overloaded">O provedor de IA está sobrecarregado agora. Tentamos algumas vezes. Tente de novo em um minuto ou troque de provedor/modelo em Configurações → Provedor de IA.</string>
     <string name="ai_error_rate_limit">Limite de solicitações atingido na sua chave de API. Espere um minuto ou troque de provedor em Configurações → Provedor de IA. No plano gratuito, o modelo Flash-Lite tem a maior cota.</string>
@@ -1341,7 +1331,6 @@
     <string name="settings_accuracy_title">Precisão das estimativas</string>
     <string name="settings_adaptive_goals">Metas adaptativas</string>
     <string name="settings_ai_features_master">Recursos de IA</string>
-    <string name="settings_ai_features_master_footer">Desativa tudo que envia dados a um provedor de IA: o Coach, registro por foto/texto/voz, «E se...?» e sugestões de metas da IA. Código de barras, busca de alimentos, registro manual, refeições salvas, água, sincronização e Health Connect continuam funcionando.</string>
     <string name="settings_ai_privacy_cloud">Fotos de comida, notas, chat e dados do perfil são enviados a este provedor. Apenas os modelos Gemma 4 no dispositivo mantêm tudo no seu celular.</string>
     <string name="settings_ai_privacy_ollama">O Ollama roda no seu computador. Nada é enviado a um provedor em nuvem.</string>
     <string name="settings_ai_privacy_ondevice">Totalmente privado: análise de alimentos, «E se...?» e estimativas de metas rodam neste dispositivo. Nada é enviado a um servidor.</string>

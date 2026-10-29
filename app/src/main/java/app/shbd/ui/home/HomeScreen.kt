@@ -128,6 +128,7 @@ import app.shbd.ui.theme.AppTextOpacity
 import app.shbd.ui.theme.dayTypeColor
 import app.shbd.ui.theme.nutrientAccentColor
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -152,7 +153,10 @@ fun HomeScreen(
     val weekStartDay by container.prefs.weekStartDay.collectAsState(initial = app.shbd.models.WeekStartDay.MONDAY)
     // Codeberg #20 phase 2: master AI-features switch — hides the AI entry tiles
     // and the What-if row, and ignores the camera/voice launcher shortcuts.
-    val aiFeaturesEnabled by container.prefs.aiFeaturesEnabled.collectAsState(initial = true)
+    // Also off on devices that cannot run the embedded model; a missing model
+    // keeps the tiles and asks for the download on tap (HomeViewModel.modelRequired).
+    val aiFeaturesEnabled by remember(container) { container.aiAvailability.map { it.entryPointsVisible } }
+        .collectAsState(initial = true)
     val useSystemDateTimePickers by container.prefs.useSystemDateTimePickers.collectAsState(initial = false)
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -2026,6 +2030,17 @@ fun HomeScreen(
             // "Edit day types" deep-links straight into the editor when the
             // nav host provides the route; the Settings hub stays the fallback.
             onOpenSettings = onOpenDayTypes ?: onOpenSettings,
+        )
+    }
+
+    ui.modelRequired?.let { kind ->
+        app.shbd.ui.components.ModelRequiredDialog(
+            kind = kind,
+            onOpenCoach = {
+                vm.dismissModelRequired()
+                app.shbd.ui.components.openCoachTab(container)
+            },
+            onDismiss = { vm.dismissModelRequired() },
         )
     }
 

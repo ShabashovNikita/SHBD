@@ -340,6 +340,7 @@ class ModelDownloadWorker(
             val request = OneTimeWorkRequestBuilder<ModelDownloadWorker>()
                 .setInputData(workDataOf(MODEL_VERSION to entry.version))
                 .addTag(modelTag(entry.version))
+                .apply { if (overWifiOnly) addTag(WIFI_ONLY_TAG) }
                 .setConstraints(
                     Constraints.Builder()
                         .setRequiredNetworkType(if (overWifiOnly) NetworkType.UNMETERED else NetworkType.CONNECTED)
@@ -364,5 +365,8 @@ class ModelDownloadWorker(
         }
 
         fun modelTag(version: String): String = "model:$version"
+
+        /** Marks a Wi-Fi-only request so the state can say "waiting for Wi-Fi". */
+        const val WIFI_ONLY_TAG = "wifiOnly"
     }
 }

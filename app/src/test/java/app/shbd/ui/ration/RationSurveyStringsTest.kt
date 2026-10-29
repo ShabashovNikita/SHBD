@@ -71,4 +71,29 @@ class RationSurveyStringsTest {
         assertEquals("2 раза", context.resources.getQuantityString(R.plurals.ration_survey_repeat_times, 2, 2))
         assertEquals("1 раз", context.resources.getQuantityString(R.plurals.ration_survey_repeat_times, 1, 1))
     }
+
+    @Test
+    fun english_planStringsTakeArgs() {
+        assertEquals("Build menu", context.getString(R.string.ration_plan_build))
+        assertEquals("Week: about 2,350 ₽ of 3,000 ₽", context.getString(R.string.ration_plan_week_cost, "2,350 ₽", "3,000 ₽"))
+        assertEquals("Over budget by 350 ₽", context.getString(R.string.ration_plan_over_budget, "350 ₽"))
+        assertEquals("cook ×2", context.getString(R.string.ration_plan_cook_portions, 2))
+        assertTrue(context.getString(R.string.ration_plan_no_dishes, "Dinner").startsWith("No dishes for: Dinner"))
+    }
+
+    @Test
+    @Config(qualifiers = "ru")
+    fun russian_planStringsTakeArgs() {
+        assertEquals("Подобрать меню", context.getString(R.string.ration_plan_build))
+        assertEquals("Подобрать заново", context.getString(R.string.ration_plan_rebuild))
+        assertEquals("Чтобы подобрать меню, нужна модель ИИ. Выберите вариант:", context.getString(R.string.ration_plan_model_text))
+        assertTrue(context.getString(R.string.ration_remote_setup_steps).contains("«Рацион»"))
+        assertTrue(!context.getString(R.string.ration_remote_setup_steps).contains("Тренер"))
+        assertEquals("разогреть", context.getString(R.string.ration_plan_reheat))
+        assertEquals("Неделя: примерно 2 350 ₽ из 3 000 ₽", context.getString(R.string.ration_plan_week_cost, "2 350 ₽", "3 000 ₽"))
+        assertEquals("Неделя: примерно 2 350 ₽", context.getString(R.string.ration_plan_week_cost_unlimited, "2 350 ₽"))
+        assertEquals("Превышение бюджета на 350 ₽", context.getString(R.string.ration_plan_over_budget, "350 ₽"))
+        assertEquals("готовка ×2", context.getString(R.string.ration_plan_cook_portions, 2))
+        assertTrue(context.getString(R.string.ration_plan_no_dishes, "Ужин").startsWith("Нет блюд для: Ужин"))
+    }
 }

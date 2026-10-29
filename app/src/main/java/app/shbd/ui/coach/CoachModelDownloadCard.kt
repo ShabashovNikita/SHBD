@@ -60,55 +60,80 @@ internal fun CoachModelDownloadCard(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(
-                stringResource(R.string.coach_model_card_text),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
+            AiModelSetupContent(
+                text = stringResource(R.string.coach_model_card_text),
+                state = state,
+                sizeText = sizeText,
+                localSupported = localSupported,
+                onSetupRemote = onSetupRemote,
+                onInstallLocal = onInstallLocal,
+                onCancel = onCancel,
             )
-            when (state) {
-                is OnDeviceDownloadState.WaitingForNetwork -> {
-                    StatusText(stringResource(R.string.coach_model_waiting_network))
-                    LinearProgressIndicator(
-                        progress = { state.progressPercent / 100f },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    CancelButton(onCancel)
-                }
-                is OnDeviceDownloadState.Downloading -> {
-                    StatusText(stringResource(R.string.coach_model_downloading, state.progressPercent))
-                    LinearProgressIndicator(
-                        progress = { state.progressPercent / 100f },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    CancelButton(onCancel)
-                }
-                is OnDeviceDownloadState.Verifying -> {
-                    StatusText(stringResource(R.string.coach_model_verifying))
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                }
-                is OnDeviceDownloadState.NotDownloaded,
-                is OnDeviceDownloadState.Downloaded,
-                is OnDeviceDownloadState.Failed -> {
-                    if (state is OnDeviceDownloadState.Failed) {
-                        Text(
-                            stringResource(R.string.coach_model_failed, state.message),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                    ModelChoices(
-                        localLabel = when (state) {
-                            // The file is already there (a cloud provider was active): just switch to it.
-                            is OnDeviceDownloadState.Downloaded -> stringResource(R.string.coach_model_use_local)
-                            is OnDeviceDownloadState.Failed -> stringResource(R.string.action_retry)
-                            else -> stringResource(R.string.coach_model_install_local, sizeText)
-                        },
-                        localSupported = localSupported,
-                        onSetupRemote = onSetupRemote,
-                        onInstallLocal = onInstallLocal,
-                    )
-                }
+        }
+    }
+}
+
+/**
+ * Body of the "pick a model" card, shared by Coach and Ration: the text, then
+ * the two choices or the local download progress. Place inside a Column.
+ */
+@Composable
+internal fun AiModelSetupContent(
+    text: String,
+    state: OnDeviceDownloadState,
+    sizeText: String,
+    localSupported: Boolean,
+    onSetupRemote: () -> Unit,
+    onInstallLocal: () -> Unit,
+    onCancel: () -> Unit,
+) {
+    Text(
+        text,
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onSurface,
+    )
+    when (state) {
+        is OnDeviceDownloadState.WaitingForNetwork -> {
+            StatusText(stringResource(R.string.coach_model_waiting_network))
+            LinearProgressIndicator(
+                progress = { state.progressPercent / 100f },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            CancelButton(onCancel)
+        }
+        is OnDeviceDownloadState.Downloading -> {
+            StatusText(stringResource(R.string.coach_model_downloading, state.progressPercent))
+            LinearProgressIndicator(
+                progress = { state.progressPercent / 100f },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            CancelButton(onCancel)
+        }
+        is OnDeviceDownloadState.Verifying -> {
+            StatusText(stringResource(R.string.coach_model_verifying))
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        }
+        is OnDeviceDownloadState.NotDownloaded,
+        is OnDeviceDownloadState.Downloaded,
+        is OnDeviceDownloadState.Failed -> {
+            if (state is OnDeviceDownloadState.Failed) {
+                Text(
+                    stringResource(R.string.coach_model_failed, state.message),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                )
             }
+            ModelChoices(
+                localLabel = when (state) {
+                    // The file is already there (a cloud provider was active): just switch to it.
+                    is OnDeviceDownloadState.Downloaded -> stringResource(R.string.coach_model_use_local)
+                    is OnDeviceDownloadState.Failed -> stringResource(R.string.action_retry)
+                    else -> stringResource(R.string.coach_model_install_local, sizeText)
+                },
+                localSupported = localSupported,
+                onSetupRemote = onSetupRemote,
+                onInstallLocal = onInstallLocal,
+            )
         }
     }
 }
@@ -135,16 +160,20 @@ private fun ModelChoices(
     }
 }
 
-/** Step-by-step help for a cloud model, with a jump to Profile → AI Provider. */
+/**
+ * Step-by-step help for a cloud model, with a jump to Profile → AI Provider.
+ * [steps] ends with where to come back (Coach by default).
+ */
 @Composable
 internal fun CoachRemoteSetupDialog(
     onOpenAiProvider: () -> Unit,
     onDismiss: () -> Unit,
+    steps: String = stringResource(R.string.coach_remote_setup_steps),
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.coach_remote_setup_title)) },
-        text = { Text(stringResource(R.string.coach_remote_setup_steps)) },
+        text = { Text(steps) },
         confirmButton = {
             TextButton(onClick = onOpenAiProvider) { Text(stringResource(R.string.coach_remote_setup_open)) }
         },

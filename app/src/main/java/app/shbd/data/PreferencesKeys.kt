@@ -25,6 +25,7 @@ internal object Keys {
         val ONBOARDING_DRAFT = stringPreferencesKey("onboardingDraft")
         /** Weekly meal-plan survey (Ration tab): answers + open step, JSON RationSurveyState. */
         val RATION_SURVEY = stringPreferencesKey("rationSurvey")
+        val RATION_PLAN = stringPreferencesKey("rationPlan")
         /** Release cleartext opt-in for user-entered AI endpoints (issue #8 follow-up, design doc D2 Option B). */
         val ALLOW_INSECURE_HTTP = booleanPreferencesKey("allowInsecureHttp")
         val HAS_SEEN_CAMERA_SCALE_TIP = booleanPreferencesKey("hasSeenCameraScaleTip")

@@ -38,9 +38,14 @@ import app.shbd.ui.theme.AppTextOpacity
 import app.shbd.ui.theme.ShbdTheme
 import java.time.DayOfWeek
 
-/** Survey summary: Diary calorie goal + every answer. Menu building arrives with ration-engine. */
+/** Survey summary: Diary calorie goal, every answer, then the weekly menu block. */
 @Composable
-internal fun RationSummaryScreen(ui: RationSurveyUiState, onEditAnswers: () -> Unit) {
+internal fun RationSummaryScreen(
+    ui: RationSurveyUiState,
+    onEditAnswers: () -> Unit,
+    plan: RationPlanUiState = RationPlanUiState(loaded = true),
+    planActions: RationPlanActions = RationPlanActions(),
+) {
     val a = ui.answers
     val muted = MaterialTheme.colorScheme.onBackground.copy(alpha = AppTextOpacity.Muted)
     Column(
@@ -72,13 +77,7 @@ internal fun RationSummaryScreen(ui: RationSurveyUiState, onEditAnswers: () -> U
                 SummaryRows(a)
             }
         }
-        Text(
-            stringResource(R.string.ration_survey_summary_coming),
-            style = MaterialTheme.typography.bodyMedium,
-            color = muted,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(),
-        )
+        RationPlanSection(plan, planActions)
         OutlinedButton(onClick = onEditAnswers, modifier = Modifier.fillMaxWidth().height(52.dp)) {
             Text(stringResource(R.string.ration_survey_summary_edit))
         }

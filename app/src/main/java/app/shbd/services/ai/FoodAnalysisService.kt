@@ -1794,6 +1794,14 @@ class FoodAnalysisService(
             "\n- Keep 4*protein + 4*carbs + 9*fat approximately equal to calories."
     }
 
+    /**
+     * Plain text request to the active model (embedded or the active cloud
+     * profile), the same dispatch as goal recalculation. Used by the Ration
+     * menu planner; other AI features do not go through it.
+     */
+    suspend fun completeText(prompt: String, op: String): String =
+        callAi(prompt, imageBytes = null, op = op, reportPhases = false)
+
     // -- Internal dispatch ------------------------------------------------
 
     private suspend fun callAi(

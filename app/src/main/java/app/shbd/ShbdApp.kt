@@ -23,6 +23,7 @@ import app.shbd.data.WeightRepository
 import app.shbd.models.AIProvider
 import app.shbd.models.CurrentMealCatalog
 import app.shbd.models.CurrentMealSchedule
+import app.shbd.models.RationCatalog
 import app.shbd.models.UserProfile
 import app.shbd.services.AdaptiveGoalResult
 import app.shbd.services.AdaptiveGoalsService
@@ -42,6 +43,9 @@ import app.shbd.services.WaterReminderPlanner
 import app.shbd.services.WidgetSnapshotWriter
 import app.shbd.services.ai.ChatService
 import app.shbd.services.ai.FoodAnalysisService
+import app.shbd.services.ai.nonEnglishResponseLanguage
+import app.shbd.services.ration.RationCatalogLoader
+import app.shbd.services.ration.RationMenuService
 import app.shbd.services.grounding.FoodDatabaseSearch
 import app.shbd.services.grounding.GroundedFoodEntryService
 import app.shbd.services.grounding.GroundedEntryFeature
@@ -65,6 +69,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -328,6 +333,19 @@ class AppContainer(app: ShbdApp) {
     }
     val foodDatabaseSearch: FoodDatabaseSearch by lazy(LazyThreadSafetyMode.NONE) {
         FoodDatabaseSearch(prefs, usdaFoodIndex, swissFoodIndex)
+    }
+
+    /** Weekly-menu catalog (assets/ration/catalog.json), read once; first use is off the main thread. */
+    val rationCatalog: RationCatalog by lazy {
+        RationCatalogLoader.load(appContext.assets.open(RationCatalogLoader.ASSET_PATH).bufferedReader().use { it.readText() })
+    }
+    val rationMenu: RationMenuService by lazy {
+        RationMenuService(
+            catalog = { withContext(Dispatchers.IO) { rationCatalog } },
+            model = { prompt: String -> foodAnalysis.completeText(prompt, op = "rationMenu") },
+            save = prefs::setRationPlan,
+            responseLanguage = { nonEnglishResponseLanguage() },
+        )
     }
     val groundedFoodEntry: GroundedFoodEntryService by lazy(LazyThreadSafetyMode.NONE) {
         check(GroundedEntryFeature.ENABLED) {

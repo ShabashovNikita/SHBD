@@ -345,7 +345,12 @@ fun ShbdNavHost(
                         }
                     }
                 }
-                composable(ShbdRoutes.RATION) { RationScreen(container = container) }
+                composable(ShbdRoutes.RATION) {
+                    RationScreen(
+                        container = container,
+                        onOpenAiProvider = { nav.navigate(ShbdRoutes.SETTINGS_AI) { launchSingleTop = true } },
+                    )
+                }
                 composable(ShbdRoutes.SETTINGS) { SettingsScreen(container = container, nav = nav) }
                 composable(ShbdRoutes.SETTINGS_PERSONAL) {
                     PersonalSettingsScreen(

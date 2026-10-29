@@ -22,12 +22,15 @@ import app.shbd.models.RationSurveyStep
 /**
  * Ration tab: survey intro, one question step or the summary, all on one
  * route. System Back walks the survey steps after the first one; elsewhere it
- * falls through to the app-wide "back to Diary".
+ * falls through to the app-wide "back to Diary". The summary also hosts the
+ * weekly menu (RationPlanViewModel).
  */
 @Composable
-fun RationScreen(container: AppContainer) {
+fun RationScreen(container: AppContainer, onOpenAiProvider: () -> Unit) {
     val vm: RationSurveyViewModel = viewModel(factory = RationSurveyViewModel.Factory(container))
     val ui by vm.state.collectAsState()
+    val planVm: RationPlanViewModel = viewModel(factory = RationPlanViewModel.Factory(container))
+    val planUi by planVm.state.collectAsState()
 
     BackHandler(enabled = (ui.position?.number ?: 0) > 1) { vm.back() }
 
@@ -44,7 +47,21 @@ fun RationScreen(container: AppContainer) {
                 val shown = if (step == ui.step) ui else RationSurveyState(ui.answers, step, ui.completed).toUiState(ui.dailyCalories)
                 when (step) {
                     RationSurveyStep.INTRO -> RationIntro(onStart = vm::start)
-                    RationSurveyStep.SUMMARY -> RationSummaryScreen(shown, onEditAnswers = vm::editAnswers)
+                    RationSurveyStep.SUMMARY -> RationSummaryScreen(
+                        shown,
+                        onEditAnswers = vm::editAnswers,
+                        plan = planUi,
+                        planActions = RationPlanActions(
+                            onBuildMenu = planVm::buildMenu,
+                            onInstallLocal = planVm::installLocalModel,
+                            onCancelDownload = planVm::cancelModelDownload,
+                            onShowRemoteHelp = planVm::showRemoteHelp,
+                            onOpenAiProvider = {
+                                planVm.showRemoteHelp(false)
+                                onOpenAiProvider()
+                            },
+                        ),
+                    )
                     else -> RationSurveyStepFrame(shown, onUpdate = vm::update, onNext = vm::next, onBack = vm::back)
                 }
             }
